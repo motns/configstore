@@ -1,0 +1,48 @@
+hash: 3940831ee04189097c4c5130c8a3f2d2f52aa562c44647d8ef524289a36d55ff
+updated: 2017-04-17T15:37:33.34330132+01:00
+imports:
+- name: github.com/aws/aws-sdk-go
+  version: 7be45195c3af1b54a609812f90c05a7e492e2491
+  subpackages:
+  - aws
+  - aws/awserr
+  - aws/awsutil
+  - aws/client
+  - aws/client/metadata
+  - aws/corehandlers
+  - aws/credentials
+  - aws/credentials/ec2rolecreds
+  - aws/credentials/endpointcreds
+  - aws/credentials/stscreds
+  - aws/defaults
+  - aws/ec2metadata
+  - aws/endpoints
+  - aws/request
+  - aws/session
+  - aws/signer/v4
+  - private/protocol
+  - private/protocol/json/jsonutil
+  - private/protocol/jsonrpc
+  - private/protocol/query
+  - private/protocol/query/queryutil
+  - private/protocol/rest
+  - private/protocol/xml/xmlutil
+  - service/kms
+  - service/sts
+- name: github.com/go-ini/ini
+  version: e7fea39b01aea8d5671f6858f0532f56e8bff3a5
+- name: github.com/howeyc/gopass
+  version: bf9dde6d0d2c004a008c27aaee91170c786f6db8
+- name: github.com/jmespath/go-jmespath
+  version: bd40a432e4c76585ef6b72d3fd96fb9b6dc7b68d
+- name: golang.org/x/crypto
+  version: cbc3d0884eac986df6e78a039b8792e869bff863
+  subpackages:
+  - ssh/terminal
+- name: golang.org/x/sys
+  version: f3918c30c5c2cb527c0b071a27c35120a6c0719a
+  subpackages:
+  - unix
+- name: gopkg.in/urfave/cli.v1
+  version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
+testImports: []
