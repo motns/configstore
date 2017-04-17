@@ -33,4 +33,9 @@ run_cmd "tar -czf configstore-${version}-linux-amd64.tar.gz -C bin/linux configs
 run_cmd "tar -czf configstore-${version}-windows-amd64.tar.gz -C bin/windows configstore"
 
 echo "Creating Git Tag..."
-run_cmd "git tag -a -m \"Release version $version\" $version"
+run_cmd "git tag ${version}"
+
+echo "Pushing Git Tag to remote..."
+run_cmd "git push origin ${version}"
+
+echo "Done!"
