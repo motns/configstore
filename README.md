@@ -137,4 +137,28 @@ Run `glide install` inside the source root to fetch these dependencies.
 
 ### Building
 
-Once all the above is done, you can use `./build.sh` to build the MacOS and Linux versions under `bin/macos/configstore` and `bin/linux/configstore` respectively.
+Once all the above is done, you can use `./build.sh` to build the Mac OS, Linux and Windows versions under `bin/darwin/configstore`,
+`bin/linux/configstore` and `bin/windows/configstore` respectively.
+
+### Releasing new version
+
+Once you built all the packages, you can use `./release.sh $version`, passing in the `$version` number you want to release.
+If the version you're releasing doesn't match the version defined in `main.go`, the script will raise an error.
+When run, the script does the following:
+
+ 1. Creates `tar.gz` archives with the version number included in the file name, for each platform separately
+ 2. Creates a Git Tag with the specified version number
+ 3. Pushes the Git Tag to GitHub
+ 
+Once the release script has run, you'll want to create a "proper" release in GitHub, which includes the pre-built
+binaries as well.
+By default GitHub insist on listing every Tag as a release, but don't let this "feature" throw you off. Just do the following:
+
+ 1. Go to the repo on GitHub
+ 2. Click the "Releases" tab
+ 3. Click the "Draft a new release" button
+ 4. Type the tag you just created into "Tag version"
+ 5. Type the version number with a `v` prefix into "Release Title" (for example "v0.0.4")
+ 6. You may want to type a changelog into "Description" for good measure
+ 7. Upload the archive files created by the release script above
+ 8. Click "Publish release"
