@@ -1,9 +1,9 @@
 package main
 
-import(
-  "errors"
-  "fmt"
-  "gopkg.in/urfave/cli.v1"
+import (
+	"errors"
+	"fmt"
+	"gopkg.in/urfave/cli.v1"
 )
 
 func cmdGet(c *cli.Context) error {
@@ -19,16 +19,20 @@ func cmdGet(c *cli.Context) error {
 	}
 
 	entry, exists := db.Data[key]
-	if ! exists {
+	if !exists {
 		return errors.New("Key does not exist in Configstore: " + key)
 	}
 
 	if entry.IsSecret {
 		enc, err := createEncryption(&db, nil)
-		if err != nil { return err }
+		if err != nil {
+			return err
+		}
 
 		decrypted, err := enc.decrypt(entry.Value)
-		if err != nil { return err }
+		if err != nil {
+			return err
+		}
 
 		fmt.Println(decrypted)
 	} else {

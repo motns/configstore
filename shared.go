@@ -6,17 +6,16 @@ import (
 	"io/ioutil"
 )
 
-
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // Types
 
 type ConfigstoreDB struct {
-	Version int `json:"version"`
-	Region string `json:"region"`
-	IsInsecure bool `json:"is_insecure"`
-	DataKey string `json:"data_key"`
-	Data map[string]ConfigstoreDBValue `json:"data"`
+	Version    int                           `json:"version"`
+	Region     string                        `json:"region"`
+	IsInsecure bool                          `json:"is_insecure"`
+	DataKey    string                        `json:"data_key"`
+	Data       map[string]ConfigstoreDBValue `json:"data"`
 }
 
 func (c ConfigstoreDB) validate() (ConfigstoreDB, error) {
@@ -28,7 +27,7 @@ func (c ConfigstoreDB) validate() (ConfigstoreDB, error) {
 		return c, errors.New("Missing key in Configstore DB: data_key")
 	}
 
-	if (c.Data == nil) {
+	if c.Data == nil {
 		return c, errors.New("Missing key in Configstore DB: data")
 	}
 
@@ -36,10 +35,9 @@ func (c ConfigstoreDB) validate() (ConfigstoreDB, error) {
 }
 
 type ConfigstoreDBValue struct {
-	Value string `json:"value"`
-	IsSecret bool `json:"is_secret"`
+	Value    string `json:"value"`
+	IsSecret bool   `json:"is_secret"`
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -57,7 +55,9 @@ func loadConfigstore(dbFile string) (ConfigstoreDB, error) {
 	}
 
 	jsonStr, err := ioutil.ReadFile(dbFile)
-	if err != nil { return ConfigstoreDB{}, err }
+	if err != nil {
+		return ConfigstoreDB{}, err
+	}
 
 	if err := json.Unmarshal(jsonStr, &db); err != nil {
 		return ConfigstoreDB{}, err

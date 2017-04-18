@@ -2,8 +2,8 @@ package main
 
 import (
 	"errors"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 )
 
@@ -22,9 +22,11 @@ func createAWSSession(region string) (*AWS, error) {
 		},
 	)
 
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 
-	return &AWS {
+	return &AWS{
 		sess: sess,
 	}, nil
 }
@@ -34,14 +36,14 @@ func (a AWS) createKMS() (*KMS, error) {
 		return nil, errors.New("AWS Session must be initialised before services can be created")
 	}
 
-	return &KMS {
+	return &KMS{
 		service: kms.New(a.sess),
 	}, nil
 }
 
 func (k KMS) generateDataKey(keyId string) (*kms.GenerateDataKeyOutput, error) {
-	in := kms.GenerateDataKeyInput {
-		KeyId: aws.String(keyId),
+	in := kms.GenerateDataKeyInput{
+		KeyId:   aws.String(keyId),
 		KeySpec: aws.String("AES_256"),
 	}
 

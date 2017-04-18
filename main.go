@@ -1,8 +1,8 @@
 package main
 
 import (
-	"os"
 	"gopkg.in/urfave/cli.v1"
+	"os"
 )
 
 func main() {
@@ -14,95 +14,95 @@ func main() {
 	app.EnableBashCompletion = true
 	app.Version = "0.0.4"
 
-	app.Commands = []cli.Command {
+	app.Commands = []cli.Command{
 		{
-			Name: "init",
-			Usage: "Initialise a new Configstore",
+			Name:   "init",
+			Usage:  "Initialise a new Configstore",
 			Action: cmdInit,
-			Flags: []cli.Flag {
-				cli.StringFlag {
-					Name: "dir",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "dir",
 					Usage: "The directory to create the Configstore file in",
 					Value: ".",
 				},
-				cli.StringFlag {
-					Name: "region",
+				cli.StringFlag{
+					Name:  "region",
 					Usage: "The AWS Region the KMS key will be created in",
 					Value: "eu-west-1",
 				},
-				cli.StringFlag {
-					Name: "master-key",
+				cli.StringFlag{
+					Name:  "master-key",
 					Usage: "The name of the AWS KMS key to be used as the master encryption key",
 				},
-				cli.BoolFlag {
-					Name: "insecure",
+				cli.BoolFlag{
+					Name:  "insecure",
 					Usage: "Initialise this Configstore with a plain-text encryption key (not backed by KMS)",
 				},
 			},
 		},
 		{
-			Name: "set",
-			Usage: "Set a new value, or update and existing one in the Configstore",
+			Name:      "set",
+			Usage:     "Set a new value, or update and existing one in the Configstore",
 			ArgsUsage: "key value",
-			Action: cmdSet,
-			Flags: []cli.Flag {
-				cli.StringFlag {
-					Name: "db",
+			Action:    cmdSet,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "db",
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
 				},
-				cli.BoolFlag {
-					Name: "secret",
+				cli.BoolFlag{
+					Name:  "secret",
 					Usage: "Whether this value is sensitive (to be encrypted)",
 				},
 			},
 		},
 		{
-			Name: "get",
-			Usage: "Get a value from the Configstore",
+			Name:      "get",
+			Usage:     "Get a value from the Configstore",
 			ArgsUsage: "key",
-			Action: cmdGet,
-			Flags: []cli.Flag {
-				cli.StringFlag {
-					Name: "db",
+			Action:    cmdGet,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "db",
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
 				},
 			},
 		},
 		{
-			Name: "ls",
-			Usage: "List all keys and their respective values from the Configstore",
+			Name:   "ls",
+			Usage:  "List all keys and their respective values from the Configstore",
 			Action: cmdLs,
-			Flags: []cli.Flag {
-				cli.StringFlag {
-					Name: "db",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "db",
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
 				},
 			},
 		},
 		{
-			Name: "unset",
-			Usage: "Remove a value from the Configstore",
+			Name:      "unset",
+			Usage:     "Remove a value from the Configstore",
 			ArgsUsage: "key",
-			Action: cmdUnset,
-			Flags: []cli.Flag {
-				cli.StringFlag {
-					Name: "db",
+			Action:    cmdUnset,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "db",
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
 				},
 			},
 		},
 		{
-			Name: "process_template",
-			Usage: "Takes a GO template file, and fills in values from this Configstore",
+			Name:      "process_template",
+			Usage:     "Takes a GO template file, and fills in values from this Configstore",
 			ArgsUsage: "/path/to/template",
-			Action: cmdProcessTemplate,
-			Flags: []cli.Flag {
-				cli.StringFlag {
-					Name: "db",
+			Action:    cmdProcessTemplate,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "db",
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
 				},

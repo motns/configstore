@@ -5,8 +5,8 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
-	"io"
 	"errors"
+	"io"
 )
 
 type Encryption struct {
@@ -15,7 +15,9 @@ type Encryption struct {
 
 func createEncryption(db *ConfigstoreDB, kms *KMS) (*Encryption, error) {
 	ciphertext, err := base64.StdEncoding.DecodeString(db.DataKey)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 
 	var key []byte
 
@@ -25,12 +27,16 @@ func createEncryption(db *ConfigstoreDB, kms *KMS) (*Encryption, error) {
 	} else {
 		if kms == nil {
 			aws, err := createAWSSession(db.Region)
-			if err != nil { return nil, err }
+			if err != nil {
+				return nil, err
+			}
 			kms, _ = aws.createKMS()
 		}
 
 		key, err = kms.decrypt(ciphertext)
-		if err != nil { return nil, err }
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &Encryption{
@@ -40,7 +46,9 @@ func createEncryption(db *ConfigstoreDB, kms *KMS) (*Encryption, error) {
 
 func (e Encryption) encrypt(text []byte) (string, error) {
 	block, err := aes.NewCipher(e.dataKey)
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 
 	b := base64.StdEncoding.EncodeToString(text)
 
@@ -59,10 +67,14 @@ func (e Encryption) encrypt(text []byte) (string, error) {
 
 func (e Encryption) decrypt(encoded string) (string, error) {
 	text, err := base64.StdEncoding.DecodeString(encoded)
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 
 	block, err := aes.NewCipher(e.dataKey)
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 
 	if len(text) < aes.BlockSize {
 		return "", errors.New("ciphertext too short")
@@ -73,7 +85,9 @@ func (e Encryption) decrypt(encoded string) (string, error) {
 	cfb := cipher.NewCFBDecrypter(block, iv)
 	cfb.XORKeyStream(text, text)
 	data, err := base64.StdEncoding.DecodeString(string(text))
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 
 	return string(data), nil
 }
