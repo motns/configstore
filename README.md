@@ -18,6 +18,15 @@ You'll also need to grab a copy of the `configstore` binary for your platform fr
 and place it somewhere on your `$PATH` (perhaps `/usr/local/bin`). 
 The project is currently compiled for 64bit Mac OS, Linux and Windows.
 
+Finally, you need to have AWS API credentials configured; since Configstore uses the AWS Go SDK for making requests, it will support all the usual methods (environment variables, credentials file, EC2 role, etc.). You can read more about these on the [SDK Configuration page](http://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html).
+If you're unsure what any of the above means, the quickest way to get started is to create a `~/.aws/credentials` file with the following contents (filling in the API credentials you got from the AWS Console):
+```
+[default]
+aws_access_key_id = YOURACCESSKEY
+aws_secret_access_key = YourSecretKey
+```
+You may already have this file if you installed the AWS CLI tool, in which case there's nothing else to do.
+
 When you have these ready, you can run `configstore init`, specifying the Master Key ARN or Alias
 (the Key needs to be in the specified region). For example:
 ```bash
@@ -82,12 +91,12 @@ This will delete the given item from the `configstore.json` file.
 The app also has the ability to take a template file, and fill in values from the Configstore DB. The app supports Go's
 plain-text template format - you can read more about it [here](https://golang.org/pkg/text/template/).
 
-A simple example would be to create a template file `application.conf` with the contents:
+A simple example would be to create a template file `application.conf` with contents:
 ```
 settingA = {{.foo}}
 settingB = {{.bar}}
 ```
-and the call the Configstore app with:
+and then call the Configstore app with:
 ```
 configstore process_template application.conf
 ```
