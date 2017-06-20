@@ -63,8 +63,19 @@ To store a secret value (it will be encrypted before storage):
 ```bash
 configstore set --secret <key>
 ```
-NOTE: Instead of taking the value as an argument, the app will prompt you to type
-it in with a silent input for security.
+> NOTE: Instead of taking the value as an argument, the app will prompt you to type it in with a silent input for security.
+
+You may also pipe data into the app, instead of passing the value as an argument. For example:
+```bash
+cat myfile.txt | configstore set myfile
+```
+This also works for storing secrets, allowing you to pipe the data from a file, instead of typing it into a prompt:
+```bash
+cat supersecret.txt | configstore set --secret secretfile
+```
+> WARNING: You should never use this facility in combination with `echo` or similar
+(like `echo "mypassword" | configstore set --secret mypass`), since it potentially exposes your secret to other
+users on the system!
 
 To retrieve a value:
 ```bash
@@ -113,8 +124,8 @@ In this mode, the encryption key is generated locally (rather than via AWS KMS),
 **plain text form** in the `configstore.json` file. This allows us to keep the internals mostly the same, while sacrificing
 security.
 
-> PLEASE NOTE that this mode is NOT suitable for production use, since anyone who has access to the `configstore.json` file
-will be able to decrypt the secrets stored within it.
+> WARNING: This mode is NOT suitable for production use, since anyone who has access to the `configstore.json` file
+will be able to decrypt the secrets stored within it!
 
 
 ## Development

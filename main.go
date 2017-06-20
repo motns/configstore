@@ -42,7 +42,7 @@ func main() {
 		},
 		{
 			Name:      "set",
-			Usage:     "Set a new value, or update and existing one in the Configstore",
+			Usage:     "Set a new value, or update an existing one in the Configstore",
 			ArgsUsage: "key value",
 			Action:    cmdSet,
 			Flags: []cli.Flag{
