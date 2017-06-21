@@ -13,6 +13,7 @@ import (
 type ConfigstoreDB struct {
 	Version    int                           `json:"version"`
 	Region     string                        `json:"region"`
+	Role       string                        `json:"role"`
 	IsInsecure bool                          `json:"is_insecure"`
 	DataKey    string                        `json:"data_key"`
 	Data       map[string]ConfigstoreDBValue `json:"data"`

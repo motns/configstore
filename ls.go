@@ -13,7 +13,7 @@ func cmdLs(c *cli.Context) error {
 		return err
 	}
 
-	enc, err := createEncryption(&db, nil)
+	enc, err := createEncryption(&db, nil, c.Bool("ignore-role"))
 	if err != nil {
 		return err
 	}

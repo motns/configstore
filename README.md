@@ -108,13 +108,31 @@ settingA = {{.foo}}
 settingB = {{.bar}}
 ```
 and then call the Configstore app with:
-```
+```bash
 configstore process_template application.conf
 ```
 The app then loads all values from the Configstore DB (decrypting secret values in the process), and then attempts
 to process the template file, replacing `{{.foo}}` and `{{.bar}}` in our example with the values stored under those keys (`foo`, `bar`).
 If you reference a key in your template file that doesn't exist in the Configstore, the app will raise an error.
 The processed output is then sent to `stdout`, so you can just pipe it into another file for storage. 
+
+### Using IAM Roles
+
+You are able to specify an IAM Role when you set up a new Configstore:
+```bash
+configstore init --master-key "alias/my-key" --role "arn:aws:iam::123456789:role/someRole"
+```
+With an IAM Role specified, Configstore will assume that role whenever it needs to call the AWS API. There are however some
+cases where you want to execute a Configstore command, but you do not want to assume the Role that is used when managing
+the contents of the Configstore: one such example is wanting to make use of your Configstore on an EC2 Instance. Since EC2
+Instances can't assume IAM Roles (they have Instance Roles instead), you'll need to bypass the extra "assume role" mechanism
+in Configstore, and rely simply on the credentials available on the instance. You can do this via the `--ignore-role` flag:
+```bash
+configstore get --ignore-role mykey
+```
+> NOTE: Make sure that the Instance Role used by the EC2 Instance has permissions to use the KMS Key set for the Configstore
+to encrypt/decrypt data.
+
 
 ### Insecure Mode
 

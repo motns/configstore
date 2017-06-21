@@ -12,7 +12,7 @@ func main() {
 	app.Usage = "Manage plain-text and encrypted credentials, using local JSON file as storage"
 	app.UsageText = "configstore [global options] command [command options]"
 	app.EnableBashCompletion = true
-	app.Version = "0.0.4"
+	app.Version = "0.0.6"
 
 	app.Commands = []cli.Command{
 		{
@@ -29,6 +29,10 @@ func main() {
 					Name:  "region",
 					Usage: "The AWS Region the KMS key will be created in",
 					Value: "eu-west-1",
+				},
+				cli.StringFlag{
+					Name:  "role",
+					Usage: "The IAM Role to assume before executing AWS API operations",
 				},
 				cli.StringFlag{
 					Name:  "master-key",
@@ -55,6 +59,10 @@ func main() {
 					Name:  "secret",
 					Usage: "Whether this value is sensitive (to be encrypted)",
 				},
+				cli.BoolFlag{
+					Name:  "ignore-role",
+					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
+				},
 			},
 		},
 		{
@@ -68,6 +76,10 @@ func main() {
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
 				},
+				cli.BoolFlag{
+					Name:  "ignore-role",
+					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
+				},
 			},
 		},
 		{
@@ -79,6 +91,10 @@ func main() {
 					Name:  "db",
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
+				},
+				cli.BoolFlag{
+					Name:  "ignore-role",
+					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 				},
 			},
 		},
@@ -105,6 +121,10 @@ func main() {
 					Name:  "db",
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
+				},
+				cli.BoolFlag{
+					Name:  "ignore-role",
+					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 				},
 			},
 		},

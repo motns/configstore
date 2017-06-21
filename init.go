@@ -11,6 +11,7 @@ import (
 func cmdInit(c *cli.Context) error {
 	dir := c.String("dir")
 	region := c.String("region")
+	role := c.String("role")
 	masterKey := c.String("master-key")
 	isInsecure := c.Bool("insecure")
 
@@ -30,9 +31,15 @@ func cmdInit(c *cli.Context) error {
 		// Since we're storing it as plain text, it doesn't really matter anyway
 		dataKey = "OfvuQJ0Cis1CvnFV2KTTYv3WCPKXOIord3OBDc0kwcU="
 		region = ""
+		role = ""
 	} else {
-		fmt.Printf("Initialising Configstore for Region \"%s\" with Master Key \"%s\" into directory: %s\n", region, masterKey, dir)
-		aws, err := createAWSSession(region)
+		if role != "" {
+			fmt.Printf("Initialising Configstore for Region \"%s\" with Master Key \"%s\", using IAM Role \"%s\", into directory: %s\n", region, masterKey, role, dir)
+		} else {
+			fmt.Printf("Initialising Configstore for Region \"%s\" with Master Key \"%s\" into directory: %s\n", region, masterKey, dir)
+		}
+
+		aws, err := createAWSSession(region, role)
 		if err != nil {
 			return err
 		}
@@ -51,6 +58,7 @@ func cmdInit(c *cli.Context) error {
 		Region:     region,
 		DataKey:    dataKey,
 		IsInsecure: isInsecure,
+		Role:       role,
 		Data:       make(map[string]ConfigstoreDBValue),
 	}
 

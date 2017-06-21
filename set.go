@@ -77,7 +77,7 @@ func cmdSet(c *cli.Context) error {
 	var value string
 
 	if isSecret {
-		enc, err := createEncryption(&db, nil)
+		enc, err := createEncryption(&db, nil, c.Bool("ignore-role"))
 		if err != nil {
 			return err
 		}

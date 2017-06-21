@@ -24,7 +24,7 @@ func cmdGet(c *cli.Context) error {
 	}
 
 	if entry.IsSecret {
-		enc, err := createEncryption(&db, nil)
+		enc, err := createEncryption(&db, nil, c.Bool("ignore-role"))
 		if err != nil {
 			return err
 		}

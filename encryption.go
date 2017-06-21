@@ -13,7 +13,14 @@ type Encryption struct {
 	dataKey []byte
 }
 
-func createEncryption(db *ConfigstoreDB, kms *KMS) (*Encryption, error) {
+// Used to create an Encryption object for encrypting/decrypting secrets. Will initialise
+// and AWS API Session, and create a KMS instance if one is not passed in.
+// If an IAM Role was defined when the Configstore was created, the `ignoreRole` flag can
+// be used to ignore (not assume) that IAM Role, and instead use the default credentials - this
+// is useful for example on EC2 servers, which cannot assume regular IAM roles, and have to rely
+// on Instance Roles instead (you do however have to make sure that the Instance Role has access
+// to the KMS Key used for the Configstore)
+func createEncryption(db *ConfigstoreDB, kms *KMS, ignoreRole bool) (*Encryption, error) {
 	ciphertext, err := base64.StdEncoding.DecodeString(db.DataKey)
 	if err != nil {
 		return nil, err
@@ -26,7 +33,13 @@ func createEncryption(db *ConfigstoreDB, kms *KMS) (*Encryption, error) {
 		key = ciphertext
 	} else {
 		if kms == nil {
-			aws, err := createAWSSession(db.Region)
+			role := db.Role
+
+			if ignoreRole == true {
+				role = ""
+			}
+
+			aws, err := createAWSSession(db.Region, role)
 			if err != nil {
 				return nil, err
 			}

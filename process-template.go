@@ -16,10 +16,10 @@ func cmdProcessTemplate(c *cli.Context) error {
 
 	templateFilePath := c.Args().Get(0)
 	if templateFilePath == "" {
-		return errors.New("You have to specify the path to a GO template file as the first argument")
+		return errors.New("You have to specify the path to a Go template file as the first argument")
 	}
 
-	enc, err := createEncryption(&db, nil)
+	enc, err := createEncryption(&db, nil, c.Bool("ignore-role"))
 	if err != nil {
 		return err
 	}

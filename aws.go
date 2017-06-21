@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
+	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 )
 
 type AWS struct {
@@ -15,7 +16,11 @@ type KMS struct {
 	service *kms.KMS
 }
 
-func createAWSSession(region string) (*AWS, error) {
+func createAWSSession(region string, role string) (*AWS, error) {
+	if region == "" {
+		return nil, errors.New("Region cannot be empty when setting up AWS Session")
+	}
+
 	sess, err := session.NewSession(
 		&aws.Config{
 			Region: aws.String(region),
@@ -24,6 +29,17 @@ func createAWSSession(region string) (*AWS, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	// If an IAM role is set, replace Session credentials
+	if role != "" {
+		creds := stscreds.NewCredentials(sess, role)
+
+		if creds == nil {
+			return nil, errors.New("Failed to get temporary credentials for IAM Role")
+		}
+
+		sess.Config.Credentials = creds
 	}
 
 	return &AWS{
