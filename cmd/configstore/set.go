@@ -7,11 +7,12 @@ import (
 	"gopkg.in/urfave/cli.v1"
 	"os"
 	"io/ioutil"
+	"github.com/CultBeauty/configstore/client"
 )
 
 func cmdSet(c *cli.Context) error {
 	dbFile := c.String("db")
-	db, err := loadConfigstore(dbFile)
+	cc, err := client.NewConfigstoreClient(dbFile, c.Bool("ignore-role"))
 	if err != nil {
 		return err
 	}
@@ -74,30 +75,8 @@ func cmdSet(c *cli.Context) error {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Process value if needed, then store
 
-	var value string
-
-	if isSecret {
-		enc, err := createEncryption(&db, nil, c.Bool("ignore-role"))
-		if err != nil {
-			return err
-		}
-
-		encrypted, err := enc.encrypt(rawValue)
-		if err != nil {
-			return err
-		}
-
-		value = string(encrypted)
-	} else {
-		value = string(rawValue)
-	}
-
-	db.Data[key] = ConfigstoreDBValue{
-		IsSecret: isSecret,
-		Value:    value,
-	}
-
-	if err := saveConfigStore(dbFile, db); err != nil {
+	err = cc.Set(key, rawValue, isSecret)
+	if err != nil {
 		return err
 	}
 

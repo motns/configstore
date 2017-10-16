@@ -1,10 +1,11 @@
-package main
+package client
 
 import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
 )
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -17,6 +18,11 @@ type ConfigstoreDB struct {
 	IsInsecure bool                          `json:"is_insecure"`
 	DataKey    string                        `json:"data_key"`
 	Data       map[string]ConfigstoreDBValue `json:"data"`
+}
+
+type ConfigstoreDBValue struct {
+	Value    string `json:"value"`
+	IsSecret bool   `json:"is_secret"`
 }
 
 func (c ConfigstoreDB) validate() (ConfigstoreDB, error) {
@@ -35,20 +41,16 @@ func (c ConfigstoreDB) validate() (ConfigstoreDB, error) {
 	return c, nil
 }
 
-type ConfigstoreDBValue struct {
-	Value    string `json:"value"`
-	IsSecret bool   `json:"is_secret"`
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // Helpers
 
-// loadConfigstore looks for a file at path dbFile, loads the JSON string
+// loadDB looks for a file at path dbFile, loads the JSON string
 // from it, and parses it into a ConfigStoreDB. An error is returned if
 // the file is missing, is not valid JSON, or the parsed contents
 // are missing required fields.
-func loadConfigstore(dbFile string) (ConfigstoreDB, error) {
+func loadDB(dbFile string) (ConfigstoreDB, error) {
 	var db ConfigstoreDB
 
 	if dbFile == "" {
@@ -67,9 +69,9 @@ func loadConfigstore(dbFile string) (ConfigstoreDB, error) {
 	return db.validate()
 }
 
-// saveConfigStore takes the provided ConfigstoreDB, marshals it into pretty-printed
+// saveDB takes the provided ConfigstoreDB, marshals it into pretty-printed
 // JSON, and then writes said JSON string into a file specified by dbFile
-func saveConfigStore(dbFile string, db ConfigstoreDB) error {
+func saveDB(dbFile string, db ConfigstoreDB) error {
 	jsonStr, err := json.MarshalIndent(db, "", "  ")
 	if err != nil {
 		return errors.New("Failed to marshal Configstore DB into JSON")

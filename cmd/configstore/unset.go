@@ -3,11 +3,13 @@ package main
 import (
 	"errors"
 	"gopkg.in/urfave/cli.v1"
+	"github.com/CultBeauty/configstore/client"
 )
 
 func cmdUnset(c *cli.Context) error {
 	dbFile := c.String("db")
-	db, err := loadConfigstore(dbFile)
+
+	cc, err := client.NewConfigstoreClient(dbFile, c.Bool("ignore-role"))
 	if err != nil {
 		return err
 	}
@@ -17,9 +19,8 @@ func cmdUnset(c *cli.Context) error {
 		return errors.New("You have to specify a Key to unset as the first argument")
 	}
 
-	delete(db.Data, key)
-
-	if err := saveConfigStore(dbFile, db); err != nil {
+	err = cc.Unset(key)
+	if err != nil {
 		return err
 	}
 
