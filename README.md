@@ -63,13 +63,15 @@ To store a secret value (it will be encrypted before storage):
 ```bash
 configstore set --secret <key>
 ```
-> NOTE: Instead of taking the value as an argument, the app will prompt you to type it in with a silent input for security.
+Instead of taking the value as an argument, the app will prompt you to type it in with a silent input for security.
+
+> WARNING: The silent input method above doesn't currently support multi-byte characters!
 
 You may also pipe data into the app, instead of passing the value as an argument. For example:
 ```bash
 cat myfile.txt | configstore set myfile
 ```
-This also works for storing secrets, allowing you to pipe the data from a file, instead of typing it into a prompt:
+This also works for storing secrets, allowing you to pipe the data from a file, instead of pasting it into a prompt:
 ```bash
 cat supersecret.txt | configstore set --secret secretfile
 ```
@@ -158,9 +160,9 @@ While it is no longer a requirement with Go `1.8` and later, you'll need to also
 the [Glide](https://glide.sh/) dependency manager to work (as of version `0.12.3` - should be fixed in a future release).
 By default this is `~/go`.
 
-Next, you'll need to check this Git repo out in your Go workspace, under `$GOPATH/src/`.
+Next, you'll need to check this Git repo out in your Go workspace, under `$GOPATH/src/github.com/CultBeauty/configstore`.
 
-> NOTE: Because of the way Go handles dependencies under `/vendor`, this project will only work inside `$GOPATH/src/`. Try to build it outside of that path, and you'll see a number of errors relating to missing dependencies.
+> NOTE: The `github.com/CultBeauty/configstore` bit is important, otherwise Go will not be able to resolve the internal dependency between packages of the application
 
 Finally, you need to install [Glide](https://glide.sh/), a dependency manager for Go packages. On Mac OS, you can do this via Homebrew:
 ```
@@ -172,6 +174,12 @@ brew install glide
 Dependencies are defined inside `glide.yaml`, with installed versions locked down in `glide.lock`.
 Run `glide install` inside the source root to fetch these dependencies.
 
+### App Layout
+
+The Configstore app is split into two packages:
+
+1. The client library under `client/`, which contains all the logic for managing a Configstore database, encrypt/decrypt secrets and so on
+2. The `configstore` CLI application under `cmd/configstore`, which is basically just a wrapper around the client library
 
 ### Building
 
