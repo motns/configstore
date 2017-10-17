@@ -128,6 +128,19 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:      "test_template",
+			Usage:     "Takes a GO template file, and checks that the provided Configstore has the required keys to fill it in",
+			ArgsUsage: "/path/to/template",
+			Action:    cmdTestTemplate,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "db",
+					Usage: "The Configstore JSON file",
+					Value: "./configstore.json",
+				},
+			},
+		},
 	}
 
 	app.Run(os.Args)

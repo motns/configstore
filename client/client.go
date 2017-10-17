@@ -97,6 +97,16 @@ func (c *ConfigstoreClient) GetAll() (map[string]string, error) {
 	return entries, nil
 }
 
+func (c *ConfigstoreClient) GetAllKeys() []string {
+	keys := make([]string, len(c.db.Data))
+
+	for k := range c.db.Data {
+		keys = append(keys, k)
+	}
+
+	return keys
+}
+
 func (c *ConfigstoreClient) Set(key string, rawValue []byte, isSecret bool) error {
 	if key == "" {
 		return errors.New("You have to specify a non-empty Key to set")
