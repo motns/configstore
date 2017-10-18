@@ -141,6 +141,12 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:      "compare_keys",
+			Usage:     "Takes two Configstore DB files, and checks that they both contain the same keys",
+			ArgsUsage: "/path/to/database1 /path/to/database2",
+			Action:    cmdCompareKeys,
+		},
 	}
 
 	app.Run(os.Args)
