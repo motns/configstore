@@ -98,6 +98,17 @@ configstore unset <key>
 ```
 This will delete the given item from the `configstore.json` file.
 
+Finally, you can take two Configstore databases, and make sure that they both contain the exact same set of keys by calling:
+```bash
+configstore compare_keys one/configstore.json two/configstore.json
+```
+This will return exit code `0` if they both have the same keys, or exit code `1` if they don't, along with a list of keys missing from
+the first or the second DB. Please note that this command only compares the list of keys, and **not** the actual values
+associated with those keys.
+This command is useful in cases where you have multiple Configstore DBs (one for each environment for example), and you
+need to keep the keys lined up. Also, since it doesn't need to read the underlying values (and therefore decrypt via AWS KMS),
+it can be run without special permissions, or even AWS access, which can be convenient on a CI server.
+
 
 ### Using template files
 
@@ -117,6 +128,18 @@ The app then loads all values from the Configstore DB (decrypting secret values 
 to process the template file, replacing `{{.foo}}` and `{{.bar}}` in our example with the values stored under those keys (`foo`, `bar`).
 If you reference a key in your template file that doesn't exist in the Configstore, the app will raise an error.
 The processed output is then sent to `stdout`, so you can just pipe it into another file for storage. 
+
+You also have the option of just "testing" a template, which checks that every key referenced in the template is
+available in the Configstore. You do this by calling:
+```bash
+configstore test_template application.conf
+``` 
+This command doesn't actually output the rendered template; it returns exit code `0` if the test was successful,
+or exit code `1`, along with an error message, if the test failed. It's also worth noting that the app doesn't
+actually try to decode the values in this mode; it simply grabs all the available keys from the Configstore,
+and feeds them through to the template engine with dummy values. This is useful, since it allows you to run the test
+anywhere (for example on a CI server), even if you don't have permissions to use the AWS KMS key for decrypting values.
+
 
 ### Using IAM Roles
 
