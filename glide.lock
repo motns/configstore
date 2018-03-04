@@ -1,8 +1,8 @@
-hash: 3940831ee04189097c4c5130c8a3f2d2f52aa562c44647d8ef524289a36d55ff
-updated: 2017-04-17T15:37:33.34330132+01:00
+hash: d665a3fa259d920517e25f60b2e85a1d7950006af3111b13accaa7334978ce72
+updated: 2018-03-04T18:56:14.311124Z
 imports:
 - name: github.com/aws/aws-sdk-go
-  version: 7be45195c3af1b54a609812f90c05a7e492e2491
+  version: aace5875a5c3b85a3902c6d72b9caed301d64cce
   subpackages:
   - aws
   - aws/awserr
@@ -20,6 +20,8 @@ imports:
   - aws/request
   - aws/session
   - aws/signer/v4
+  - internal/sdkrand
+  - internal/shareddefaults
   - private/protocol
   - private/protocol/json/jsonutil
   - private/protocol/jsonrpc

@@ -8,7 +8,7 @@ fi
 
 version="$1"
 
-app_version_check=`grep "$version" main.go`
+app_version_check=`grep "$version" cmd/configstore/main.go`
 
 if [ -z "$app_version_check" ]
 then
