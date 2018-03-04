@@ -128,6 +128,25 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:      "test_template",
+			Usage:     "Takes a GO template file, and checks that the provided Configstore has the required keys to fill it in",
+			ArgsUsage: "/path/to/template",
+			Action:    cmdTestTemplate,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "db",
+					Usage: "The Configstore JSON file",
+					Value: "./configstore.json",
+				},
+			},
+		},
+		{
+			Name:      "compare_keys",
+			Usage:     "Takes two Configstore DB files, and checks that they both contain the same keys",
+			ArgsUsage: "/path/to/database1 /path/to/database2",
+			Action:    cmdCompareKeys,
+		},
 	}
 
 	app.Run(os.Args)
