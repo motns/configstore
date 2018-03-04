@@ -49,12 +49,12 @@ func (c ConfigstoreClient) dbContainsEncrypted() bool {
 
 func (c *ConfigstoreClient) Get(key string) (string, error) {
 	if key == "" {
-		return "", errors.New("You have to specify a non-empty Key to get")
+		return "", errors.New("you have to specify a non-empty Key to get")
 	}
 
 	entry, exists := c.db.Data[key]
 	if !exists {
-		return "", errors.New("Key does not exist in Configstore: " + key)
+		return "", errors.New("key does not exist in Configstore: " + key)
 	}
 
 	if entry.IsSecret {

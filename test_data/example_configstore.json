@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "region": "eu-west-1",
+  "role": "serverRole",
+  "is_insecure": true,
+  "data_key": "OfvuQJ0Cis1CvnFV2KTTYv3WCPKXOIord3OBDc0kwcU=",
+  "data": {
+    "password": {
+      "value": "evl7D2gYxwxXRDuAIQ8jwQ7UXoRA8T7R1N+ZU4zZa/g=",
+      "is_secret": true
+    },
+    "username": {
+      "value": "admin",
+      "is_secret": false
+    }
+  }
+}

@@ -20,7 +20,7 @@ func cmdInit(c *cli.Context) error {
 	}
 
 	if !isInsecure && masterKey == "" {
-		return errors.New("You have to specify --master-key if --insecure is not set")
+		return errors.New("you have to specify --master-key if --insecure is not set")
 	}
 
 	_, err := client.InitConfigstore(dir, region, role, masterKey, isInsecure)
