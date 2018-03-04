@@ -1,0 +1,2 @@
+login_user: {{.username}}
+login_pass: {{.password}}

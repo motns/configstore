@@ -2,3 +2,4 @@ bin
 vendor
 configstore.json
 *.tar.gz
+test_data/configstore.json

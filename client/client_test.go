@@ -88,8 +88,12 @@ func TestGetAll(t *testing.T) {
 		t.Errorf("failed to load configstore values: %s", err)
 	}
 
-	if len(configMap) != 2 {
-		t.Errorf("expected 2 elements in configmap, got %d", len(configMap))
+	if len(configMap) != 3 {
+		t.Errorf("expected 3 elements in configmap, got %d", len(configMap))
+	}
+
+	if configMap["lastname"] != "Parker" {
+		t.Errorf("expected \"Parker\" got %s", configMap["lastname"])
 	}
 
 	if configMap["username"] != "admin" {

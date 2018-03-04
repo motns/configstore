@@ -209,6 +209,19 @@ The Configstore app is split into two packages:
 Once all the above is done, you can use `./build.sh` to build the Mac OS, Linux and Windows versions under `bin/darwin/configstore`,
 `bin/linux/configstore` and `bin/windows/configstore` respectively.
 
+### Testing
+
+The tests use a combination of the Go testing framework for exercising the internal client library, and the [BATS](https://github.com/sstephenson/bats)
+application for black-box testing the commands in the built version of the app.
+
+To run the tests you'll need to install BATS first:
+```bash
+brew install bats
+```
+
+Once done, just execute `./test.sh`, which will first run the Go tests, and then the BATS tests (defined in `configstore.bats`).
+
+
 ### Releasing new version
 
 Once you built all the packages, you can use `./release.sh $version`, passing in the `$version` number you want to release.
@@ -216,7 +229,7 @@ If the version you're releasing doesn't match the version defined in `main.go`, 
 When run, the script does the following:
 
  1. Creates `tar.gz` archives with the version number included in the file name, for each platform separately
- 2. Creates a Git Tag with the specified version number
+ 2. Creates a Git Tag with the specified version number and `v` as a prefix, for example `v0.0.4`
  3. Pushes the Git Tag to GitHub
  
 Once the release script has run, you'll want to create a "proper" release in GitHub, which includes the pre-built
@@ -227,7 +240,7 @@ By default GitHub insist on listing every Tag as a release, but don't let this "
  2. Click the "Releases" tab
  3. Click the "Draft a new release" button
  4. Type the tag you just created into "Tag version"
- 5. Type the version number with a `v` prefix into "Release Title" (for example "v0.0.4")
+ 5. Type the version number prefixed by "Release " into "Release Title" (for example "Release v0.0.4")
  6. You may want to type a changelog into "Description" for good measure
  7. Upload the archive files created by the release script above
  8. Click "Publish release"
