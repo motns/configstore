@@ -209,7 +209,7 @@ The Configstore app is split into two packages:
 Once all the above is done, you can use `./build.sh` to build the Mac OS, Linux and Windows versions under `bin/darwin/configstore`,
 `bin/linux/configstore` and `bin/windows/configstore` respectively.
 
-### Testing
+### Testing
 
 The tests use a combination of the Go testing framework for exercising the internal client library, and the [BATS](https://github.com/sstephenson/bats)
 application for black-box testing the commands in the built version of the app.
