@@ -150,6 +150,23 @@ and feeds them through to the template engine with dummy values. This is useful,
 anywhere (for example on a CI server), even if you don't have permissions to use the AWS KMS key for decrypting values.
 
 
+### Overrides
+
+Overrides are helpful in cases where you have a single Configstore for an environment, but you need two or more versions
+of it with only minor differences. Instead of having to duplicate the entire Configstore DB, you can override one or more
+keys via an override file, which is basically just a JSON file with a single, flat object in it, where both keys and values
+are strings. 
+
+Overrides are supported for any command which reads or outputs data (`get`, `ls`, `process_template`, etc.) via the
+`--override` flag.
+
+The rules for overrides are:
+ * You can only apply one override file at a time
+ * Overrides cannot contain any encrypted values, and therefore can't be used to override secrets. If you have different secret values,
+   you should have different Configstore DBs instead.
+ * You can't use the override to append new keys, and your override can only contain keys which exist in the Configstore DB  
+
+
 ### Using IAM Roles
 
 You are able to specify an IAM Role when you set up a new Configstore:

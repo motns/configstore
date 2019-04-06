@@ -17,6 +17,10 @@
     "username": {
       "value": "admin",
       "is_secret": false
+    },
+    "email": {
+      "value": "spider-man@example.com",
+      "is_secret": false
     }
   }
 }

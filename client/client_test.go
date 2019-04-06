@@ -40,7 +40,7 @@ func TestInitConfigstore(t *testing.T) {
 }
 
 func TestNewConfigstoreClient(t *testing.T) {
-	_, err := NewConfigstoreClient("../test_data/example_configstore.json", true)
+	_, err := NewConfigstoreClient("../test_data/example_configstore.json", "", true)
 
 	if err != nil {
 		t.Errorf("failed to initialise configstore client: %s", err)
@@ -48,7 +48,7 @@ func TestNewConfigstoreClient(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	c, err := NewConfigstoreClient("../test_data/example_configstore.json", true)
+	c, err := NewConfigstoreClient("../test_data/example_configstore.json", "", true)
 
 	if err != nil {
 		t.Errorf("failed to initialise configstore client: %s", err)
@@ -73,10 +73,34 @@ func TestGet(t *testing.T) {
 	if password != "supersecret" {
 		t.Errorf("expected \"supersecret\" got %s", password)
 	}
+
+	_, err = c.Get("foo")
+
+	if err == nil {
+		t.Error("expected get for missing key to fail")
+	}
+}
+
+func TestGetWithOverride(t *testing.T) {
+	c, err := NewConfigstoreClient("../test_data/example_configstore.json", "../test_data/override.json", true)
+
+	if err != nil {
+		t.Errorf("failed to initialise configstore client: %s", err)
+	}
+
+	username, err := c.Get("username")
+
+	if err != nil {
+		t.Errorf("failed to get username key: %s", err)
+	}
+
+	if username != "root" {
+		t.Errorf("expected \"root\" got %s", username)
+	}
 }
 
 func TestGetAll(t *testing.T) {
-	c, err := NewConfigstoreClient("../test_data/example_configstore.json", true)
+	c, err := NewConfigstoreClient("../test_data/example_configstore.json", "", true)
 
 	if err != nil {
 		t.Errorf("failed to initialise configstore client: %s", err)
@@ -88,8 +112,8 @@ func TestGetAll(t *testing.T) {
 		t.Errorf("failed to load configstore values: %s", err)
 	}
 
-	if len(configMap) != 3 {
-		t.Errorf("expected 3 elements in configmap, got %d", len(configMap))
+	if len(configMap) != 4 {
+		t.Errorf("expected 4 elements in configmap, got %d", len(configMap))
 	}
 
 	if configMap["lastname"] != "Parker" {
@@ -102,6 +126,32 @@ func TestGetAll(t *testing.T) {
 
 	if configMap["password"] != "supersecret" {
 		t.Errorf("expected \"supersecret\" got %s", configMap["password"])
+	}
+
+	if configMap["email"] != "spider-man@example.com" {
+		t.Errorf("expected \"spider-man@example.com\" got %s", configMap["email"])
+	}
+}
+
+func TestGetAllWithOverride(t *testing.T) {
+	c, err := NewConfigstoreClient("../test_data/example_configstore.json", "../test_data/override.json", true)
+
+	if err != nil {
+		t.Errorf("failed to initialise configstore client: %s", err)
+	}
+
+	configMap, err := c.GetAll()
+
+	if err != nil {
+		t.Errorf("failed to load configstore values: %s", err)
+	}
+
+	if len(configMap) != 4 {
+		t.Errorf("expected 4 elements in configmap, got %d", len(configMap))
+	}
+
+	if configMap["email"] != "peter.parker@example.com" {
+		t.Errorf("expected \"peter.parker@example.com\" got %s", configMap["email"])
 	}
 }
 

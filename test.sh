@@ -7,8 +7,8 @@ go test -v client/**
 
 echo ""
 echo "=== Building latest version of configstore binary..."
-mkdir -p bin/darwin
-GOOS=darwin GOARCH=amd64 go build -o bin/darwin/configstore cmd/configstore/**
+mkdir -p bin/darwin/amd64
+GOOS=darwin GOARCH=amd64 go build -o bin/darwin/amd64/configstore cmd/configstore/**
 
 echo "=== Running BATS tests against configstore binary..."
 bats configstore.bats

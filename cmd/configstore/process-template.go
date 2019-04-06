@@ -9,16 +9,14 @@ import (
 )
 
 func cmdProcessTemplate(c *cli.Context) error {
-	dbFile := c.String("db")
-
-	cc, err := client.NewConfigstoreClient(dbFile, c.Bool("ignore-role"))
+	cc, err := client.NewConfigstoreClient(c.String("db"), c.String("override"), c.Bool("ignore-role"))
 	if err != nil {
 		return err
 	}
 
 	templateFilePath := c.Args().Get(0)
 	if templateFilePath == "" {
-		return errors.New("You have to specify the path to a Go template file as the first argument")
+		return errors.New("you have to specify the path to a Go template file as the first argument")
 	}
 
 	templateValues, err := cc.GetAll()

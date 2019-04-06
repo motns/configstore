@@ -12,7 +12,7 @@ func main() {
 	app.Usage = "Manage plain-text and encrypted credentials, using local JSON file as storage"
 	app.UsageText = "configstore [global options] command [command options]"
 	app.EnableBashCompletion = true
-	app.Version = "1.1.0"
+	app.Version = "2.0.0"
 
 	app.Commands = []cli.Command{
 		{
@@ -76,6 +76,11 @@ func main() {
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
 				},
+				cli.StringFlag{
+					Name:  "override",
+					Usage: "JSON file with key-value pairs for overriding non-secret values in Configstore DB",
+					Value: "",
+				},
 				cli.BoolFlag{
 					Name:  "ignore-role",
 					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
@@ -93,6 +98,11 @@ func main() {
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
 				},
+				cli.StringFlag{
+					Name:  "override",
+					Usage: "JSON file with key-value pairs for overriding non-secret values in Configstore DB",
+					Value: "",
+				},
 				cli.BoolFlag{
 					Name:  "ignore-role",
 					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
@@ -108,6 +118,11 @@ func main() {
 					Name:  "db",
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
+				},
+				cli.StringFlag{
+					Name:  "override",
+					Usage: "JSON file with key-value pairs for overriding non-secret values in Configstore DB",
+					Value: "",
 				},
 				cli.BoolFlag{
 					Name:  "ignore-role",
@@ -138,6 +153,11 @@ func main() {
 					Name:  "db",
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
+				},
+				cli.StringFlag{
+					Name:  "override",
+					Usage: "JSON file with key-value pairs for overriding non-secret values in Configstore DB",
+					Value: "",
 				},
 				cli.BoolFlag{
 					Name:  "ignore-role",

@@ -2,8 +2,10 @@ package client
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 )
 
 type ConfigstoreClient struct {
@@ -11,12 +13,28 @@ type ConfigstoreClient struct {
 	db          ConfigstoreDB
 	encryption  *Encryption
 	ignoreRole  bool
+	overrides   map[string]string
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Private
+
+func loadOverride(path string) (map[string]string, error) {
+	var overrides = make(map[string]string)
+
+	jsonStr, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(jsonStr, &overrides); err != nil {
+		return nil, err
+	}
+
+	return overrides, nil
+}
 
 func (c *ConfigstoreClient) initEncryption() error {
 	if c.encryption == nil {
@@ -41,7 +59,6 @@ func (c ConfigstoreClient) dbContainsEncrypted() bool {
 
 	return false
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,7 +87,12 @@ func (c *ConfigstoreClient) Get(key string) (string, error) {
 
 		return decrypted, nil
 	} else {
-		return entry.Value, nil
+		o, exists := c.overrides[key]
+		if exists {
+			return o, nil
+		} else {
+			return entry.Value, nil
+		}
 	}
 }
 
@@ -111,7 +133,12 @@ func (c *ConfigstoreClient) GetAll() (map[string]string, error) {
 
 			entries[k] = decoded
 		} else {
-			entries[k] = v.Value
+			o, exists := c.overrides[k]
+			if exists {
+				entries[k] = o
+			} else {
+				entries[k] = v.Value
+			}
 		}
 	}
 
@@ -198,10 +225,30 @@ func (c *ConfigstoreClient) EnsureLatestVersion() error {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Factory
 
-func NewConfigstoreClient(dbFile string, ignoreRole bool) (*ConfigstoreClient, error) {
+func NewConfigstoreClient(dbFile string, overrideFile string, ignoreRole bool) (*ConfigstoreClient, error) {
 	db, err := loadDB(dbFile)
 	if err != nil {
 		return nil, err
+	}
+
+	var overrides = make(map[string]string)
+
+	if overrideFile != "" {
+		overrides, err = loadOverride(overrideFile)
+		if err != nil {
+			return nil, err
+		}
+
+		for k := range overrides {
+			mainVal, exists := db.Data[k]
+			if !exists {
+				return nil, errors.New("override key doesn't exist in Configstore DB: " + k)
+			}
+
+			if mainVal.IsSecret {
+				return nil, errors.New("trying to override key with secret value: " + k)
+			}
+		}
 	}
 
 	var c = &ConfigstoreClient{
@@ -209,6 +256,7 @@ func NewConfigstoreClient(dbFile string, ignoreRole bool) (*ConfigstoreClient, e
 		db:         db,
 		encryption: nil,
 		ignoreRole: ignoreRole,
+		overrides:  overrides,
 	}
 
 	if err := c.EnsureLatestVersion(); err != nil {

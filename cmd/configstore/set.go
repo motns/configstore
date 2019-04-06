@@ -11,8 +11,7 @@ import (
 )
 
 func cmdSet(c *cli.Context) error {
-	dbFile := c.String("db")
-	cc, err := client.NewConfigstoreClient(dbFile, c.Bool("ignore-role"))
+	cc, err := client.NewConfigstoreClient(c.String("db"), "", c.Bool("ignore-role"))
 	if err != nil {
 		return err
 	}
