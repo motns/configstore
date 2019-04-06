@@ -1,7 +1,7 @@
-package: github.com/Cultbeauty/configstore
+package: github.com/CultBeauty/configstore
 import:
 - package: github.com/aws/aws-sdk-go
-  version: ~1.13.8
+  version: ~1.19.11
   subpackages:
   - aws
   - aws/session

@@ -184,7 +184,7 @@ will be able to decrypt the secrets stored within it!
 
 ### Prerequisites
 
-First, you'll need to install Go (duh!) - on Mac OS you can do this via Homebrew:
+First, you'll need to install Go (`>= 1.12`) - on Mac OS you can do this via Homebrew:
 ```
 brew install go --with-cc-common
 ```

@@ -1,8 +1,8 @@
-hash: d665a3fa259d920517e25f60b2e85a1d7950006af3111b13accaa7334978ce72
-updated: 2018-03-04T18:56:14.311124Z
+hash: 0fea6400d72a143a9febfa3657c524818ca92acf9e9591a5e92a8694f872a482
+updated: 2019-04-06T15:20:41.300805+01:00
 imports:
 - name: github.com/aws/aws-sdk-go
-  version: aace5875a5c3b85a3902c6d72b9caed301d64cce
+  version: 56c1def75689cceec1fa6f14c2eedb4b798827f9
   subpackages:
   - aws
   - aws/awserr
@@ -13,14 +13,19 @@ imports:
   - aws/credentials
   - aws/credentials/ec2rolecreds
   - aws/credentials/endpointcreds
+  - aws/credentials/processcreds
   - aws/credentials/stscreds
+  - aws/csm
   - aws/defaults
   - aws/ec2metadata
   - aws/endpoints
   - aws/request
   - aws/session
   - aws/signer/v4
+  - internal/ini
+  - internal/sdkio
   - internal/sdkrand
+  - internal/sdkuri
   - internal/shareddefaults
   - private/protocol
   - private/protocol/json/jsonutil
@@ -31,8 +36,6 @@ imports:
   - private/protocol/xml/xmlutil
   - service/kms
   - service/sts
-- name: github.com/go-ini/ini
-  version: e7fea39b01aea8d5671f6858f0532f56e8bff3a5
 - name: github.com/howeyc/gopass
   version: bf9dde6d0d2c004a008c27aaee91170c786f6db8
 - name: github.com/jmespath/go-jmespath
