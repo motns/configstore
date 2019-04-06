@@ -150,7 +150,7 @@ and feeds them through to the template engine with dummy values. This is useful,
 anywhere (for example on a CI server), even if you don't have permissions to use the AWS KMS key for decrypting values.
 
 
-### Overrides
+### Overrides
 
 Overrides are helpful in cases where you have a single Configstore for an environment, but you need two or more versions
 of it with only minor differences. Instead of having to duplicate the entire Configstore DB, you can override one or more
