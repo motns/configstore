@@ -1,6 +1,7 @@
 package client
 
 import (
+	"encoding/base64"
 	"errors"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -18,7 +19,7 @@ type KMS struct {
 
 func createAWSSession(region string, role string) (*AWS, error) {
 	if region == "" {
-		return nil, errors.New("Region cannot be empty when setting up AWS Session")
+		return nil, errors.New("region cannot be empty when setting up AWS Session")
 	}
 
 	sess, err := session.NewSession(
@@ -36,7 +37,7 @@ func createAWSSession(region string, role string) (*AWS, error) {
 		creds := stscreds.NewCredentials(sess, role)
 
 		if creds == nil {
-			return nil, errors.New("Failed to get temporary credentials for IAM Role")
+			return nil, errors.New("failed to get temporary credentials for IAM Role")
 		}
 
 		sess.Config.Credentials = creds
@@ -66,11 +67,29 @@ func (k KMS) generateDataKey(keyId string) (*kms.GenerateDataKeyOutput, error) {
 	return k.service.GenerateDataKey(&in)
 }
 
-func (k KMS) decrypt(text []byte) ([]byte, error) {
-	in := kms.DecryptInput{
+func (k KMS) decrypt(text []byte) ([]byte, string, error) {
+	in := &kms.DecryptInput{
 		CiphertextBlob: text,
 	}
 
-	out, err := k.service.Decrypt(&in)
-	return out.Plaintext, err
+	out, err := k.service.Decrypt(in)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return out.Plaintext, *out.KeyId, nil
+}
+
+func (k KMS) encrypt(keyId string, text []byte) (string, error) {
+	in := &kms.EncryptInput{
+		KeyId: &keyId,
+		Plaintext: text,
+	}
+
+	out, err := k.service.Encrypt(in)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.StdEncoding.EncodeToString(out.CiphertextBlob), nil
 }

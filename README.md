@@ -98,7 +98,7 @@ configstore unset <key>
 ```
 This will delete the given item from the `configstore.json` file.
 
-Finally, you can take two Configstore databases, and make sure that they both contain the exact same set of keys by calling:
+You can take two Configstore databases, and make sure that they both contain the exact same set of keys by calling:
 ```bash
 configstore compare_keys one/configstore.json two/configstore.json
 ```
@@ -108,6 +108,15 @@ associated with those keys.
 This command is useful in cases where you have multiple Configstore DBs (one for each environment for example), and you
 need to keep the keys lined up. Also, since it doesn't need to read the underlying values (and therefore decrypt via AWS KMS),
 it can be run without special permissions, or even AWS access, which can be convenient on a CI server.
+
+Finally, you can retrieve a key and encrypt it using the KMS Master key associated with the given Configstore by calling:
+```bash
+configstore as_kms_enc <key>
+```
+This is useful for example if you want to use one of your secret values with AWS Lambda. Lambda has support for taking
+encrypted secrets via its configuration, which it then decrypts and passes to your function as an environment variable
+at run time. Unfortunately it only support KMS master keys when doing this, whereas Configstore normally uses a generated
+data key internally.
 
 
 ### Using template files

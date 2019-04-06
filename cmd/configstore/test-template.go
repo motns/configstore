@@ -19,7 +19,7 @@ func cmdTestTemplate(c *cli.Context) error {
 
 	templateFilePath := c.Args().Get(0)
 	if templateFilePath == "" {
-		return errors.New("You have to specify the path to a Go template file as the first argument")
+		return errors.New("you have to specify the path to a Go template file as the first argument")
 	}
 
 	keys := cc.GetAllKeys()

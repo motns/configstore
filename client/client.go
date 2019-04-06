@@ -74,9 +74,30 @@ func (c *ConfigstoreClient) Get(key string) (string, error) {
 	}
 }
 
+func (c *ConfigstoreClient) GetAsKMSEncrypted(key string) (string, error) {
+	value, err := c.Get(key)
+	if err != nil {
+		return "", err
+	}
+
+	err = c.initEncryption() // Although at this point it's probably already initialised
+	if err != nil {
+		return "", err
+	}
+
+	encrypted, err := c.encryption.kms.encrypt(c.db.MasterKeyId, []byte(value))
+	if err != nil {
+		return "", err
+	}
+
+	return encrypted, nil
+}
+
 func (c *ConfigstoreClient) GetAll() (map[string]string, error) {
 	if c.dbContainsEncrypted() {
-		c.initEncryption()
+		if err := c.initEncryption(); err != nil {
+			return nil, err
+		}
 	}
 
 	entries := make(map[string]string, len(c.db.Data))
@@ -109,7 +130,7 @@ func (c *ConfigstoreClient) GetAllKeys() []string {
 
 func (c *ConfigstoreClient) Set(key string, rawValue []byte, isSecret bool) error {
 	if key == "" {
-		return errors.New("You have to specify a non-empty Key to set")
+		return errors.New("you have to specify a non-empty Key to set")
 	}
 
 	var value string
@@ -158,6 +179,20 @@ func (c *ConfigstoreClient) Unset(key string) error {
 	return nil
 }
 
+func (c *ConfigstoreClient) EnsureLatestVersion() error {
+	if c.db.Version == 2 {
+		return nil // Nothing to do - already latest version
+	} else {
+		err := c.initEncryption()
+		if err != nil {
+			return err
+		}
+
+		c.db.MasterKeyId = c.encryption.masterKeyId
+		c.db.Version = 2
+		return saveDB(c.dbFile, c.db)
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,19 +204,25 @@ func NewConfigstoreClient(dbFile string, ignoreRole bool) (*ConfigstoreClient, e
 		return nil, err
 	}
 
-	return &ConfigstoreClient{
+	var c = &ConfigstoreClient{
 		dbFile:     dbFile,
 		db:         db,
 		encryption: nil,
 		ignoreRole: ignoreRole,
-	}, nil
+	}
+
+	if err := c.EnsureLatestVersion(); err != nil {
+		return nil, err
+	}
+
+	return c, nil
 }
 
 func InitConfigstore(dir string, region string, role string, masterKey string, isInsecure bool) (*ConfigstoreClient, error) {
 	var dataKey string
 
 	if !isInsecure && masterKey == "" {
-		return nil, errors.New("You have to specify --master-key if --insecure is not set")
+		return nil, errors.New("you have to specify --master-key if --insecure is not set")
 	}
 
 	if isInsecure {
@@ -212,9 +253,10 @@ func InitConfigstore(dir string, region string, role string, masterKey string, i
 	}
 
 	db := ConfigstoreDB{
-		Version:    1,
+		Version:    2,
 		Region:     region,
 		DataKey:    dataKey,
+		MasterKeyId: masterKey,
 		IsInsecure: isInsecure,
 		Role:       role,
 		Data:       make(map[string]ConfigstoreDBValue),

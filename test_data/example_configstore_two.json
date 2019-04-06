@@ -1,9 +1,10 @@
 {
-  "version": 1,
+  "version": 2,
   "region": "eu-west-1",
   "role": "serverRole",
   "is_insecure": true,
   "data_key": "OfvuQJ0Cis1CvnFV2KTTYv3WCPKXOIord3OBDc0kwcU=",
+  "master_key_name": "",
   "data": {
     "firstname": {
       "value": "Peter",

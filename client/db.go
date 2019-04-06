@@ -12,12 +12,13 @@ import (
 // Types
 
 type ConfigstoreDB struct {
-	Version    int                           `json:"version"`
-	Region     string                        `json:"region"`
-	Role       string                        `json:"role"`
-	IsInsecure bool                          `json:"is_insecure"`
-	DataKey    string                        `json:"data_key"`
-	Data       map[string]ConfigstoreDBValue `json:"data"`
+	Version        int                           `json:"version"`
+	Region         string                        `json:"region"`
+	Role           string                        `json:"role"`
+	IsInsecure     bool                          `json:"is_insecure"`
+	DataKey        string                        `json:"data_key"`
+	MasterKeyId    string                        `json:"master_key_id,omitempty"`
+	Data           map[string]ConfigstoreDBValue `json:"data"`
 }
 
 type ConfigstoreDBValue struct {
@@ -27,15 +28,15 @@ type ConfigstoreDBValue struct {
 
 func (c ConfigstoreDB) validate() (ConfigstoreDB, error) {
 	if c.Version == 0 {
-		return c, errors.New("Missing key in Configstore DB: version")
+		return c, errors.New("missing key in Configstore DB: version")
 	}
 
 	if c.DataKey == "" {
-		return c, errors.New("Missing key in Configstore DB: data_key")
+		return c, errors.New("missing key in Configstore DB: data_key")
 	}
 
 	if c.Data == nil {
-		return c, errors.New("Missing key in Configstore DB: data")
+		return c, errors.New("missing key in Configstore DB: data")
 	}
 
 	return c, nil
@@ -54,7 +55,7 @@ func loadDB(dbFile string) (ConfigstoreDB, error) {
 	var db ConfigstoreDB
 
 	if dbFile == "" {
-		return ConfigstoreDB{}, errors.New("Cannot load Configstore DB from empty path!")
+		return ConfigstoreDB{}, errors.New("cannot load Configstore DB from empty path")
 	}
 
 	jsonStr, err := ioutil.ReadFile(dbFile)
@@ -74,7 +75,7 @@ func loadDB(dbFile string) (ConfigstoreDB, error) {
 func saveDB(dbFile string, db ConfigstoreDB) error {
 	jsonStr, err := json.MarshalIndent(db, "", "  ")
 	if err != nil {
-		return errors.New("Failed to marshal Configstore DB into JSON")
+		return errors.New("failed to marshal Configstore DB into JSON")
 	}
 
 	if err := ioutil.WriteFile(dbFile, jsonStr, 0644); err != nil {

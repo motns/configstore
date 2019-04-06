@@ -11,6 +11,8 @@ import (
 
 type Encryption struct {
 	dataKey []byte
+	masterKeyId string
+	kms *KMS
 }
 
 // Used to create an Encryption object for encrypting/decrypting secrets. Will initialise
@@ -26,11 +28,12 @@ func createEncryption(db *ConfigstoreDB, kms *KMS, ignoreRole bool) (*Encryption
 		return nil, err
 	}
 
-	var key []byte
+	var dataKey []byte
+	var masterKey = ""
 
 	if db.IsInsecure {
-		// The key is stored as plain text
-		key = ciphertext
+		// The dataKey is stored as plain text
+		dataKey = ciphertext
 	} else {
 		if kms == nil {
 			role := db.Role
@@ -46,14 +49,16 @@ func createEncryption(db *ConfigstoreDB, kms *KMS, ignoreRole bool) (*Encryption
 			kms, _ = aws.createKMS()
 		}
 
-		key, err = kms.decrypt(ciphertext)
+		dataKey, masterKey, err = kms.decrypt(ciphertext)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	return &Encryption{
-		dataKey: key,
+		dataKey: dataKey,
+		masterKeyId: masterKey,
+		kms: kms,
 	}, nil
 }
 

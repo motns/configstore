@@ -12,7 +12,7 @@ func main() {
 	app.Usage = "Manage plain-text and encrypted credentials, using local JSON file as storage"
 	app.UsageText = "configstore [global options] command [command options]"
 	app.EnableBashCompletion = true
-	app.Version = "1.0.0"
+	app.Version = "1.1.0"
 
 	app.Commands = []cli.Command{
 		{
@@ -70,6 +70,23 @@ func main() {
 			Usage:     "Get a value from the Configstore",
 			ArgsUsage: "key",
 			Action:    cmdGet,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "db",
+					Usage: "The Configstore JSON file",
+					Value: "./configstore.json",
+				},
+				cli.BoolFlag{
+					Name:  "ignore-role",
+					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
+				},
+			},
+		},
+		{
+			Name:      "as_kms_enc",
+			Usage:     "Retrieve a value from the Configstore, encrypt it with the KMS Master Key for this DB, and return the result",
+			ArgsUsage: "key",
+			Action:    cmdAsKMSEnc,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "db",

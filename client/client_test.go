@@ -1,9 +1,9 @@
 package client
 
 import (
-	"testing"
 	"io/ioutil"
 	"os"
+	"testing"
 )
 
 func TestInitConfigstore(t *testing.T) {
