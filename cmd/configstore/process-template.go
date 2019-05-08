@@ -5,7 +5,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 	"os"
 	"text/template"
-	"github.com/CultBeauty/configstore/client"
+	"github.com/motns/configstore/client"
 )
 
 func cmdProcessTemplate(c *cli.Context) error {

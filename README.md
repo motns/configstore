@@ -14,7 +14,7 @@ is then used to decrypt the secret value. The decrypted **Data Key** is then dis
 In order to use the config store, it first needs to be initialised. However, before you can do that, you need to create
 an AWS KMS Master Key - [see Documentation](http://docs.aws.amazon.com/kms/latest/developerguide/create-keys.html).
 
-You'll also need to grab a copy of the `configstore` binary for your platform from [Releases](https://github.com/CultBeauty/configstore/releases),
+You'll also need to grab a copy of the `configstore` binary for your platform from [Releases](https://github.com/motns/configstore/releases),
 and place it somewhere on your `$PATH` (perhaps `/usr/local/bin`). 
 The project is currently compiled for 64bit Mac OS, Linux and Windows.
 
@@ -209,9 +209,9 @@ While it is no longer a requirement with Go `1.8` and later, you'll need to also
 the [Glide](https://glide.sh/) dependency manager to work (as of version `0.12.3` - should be fixed in a future release).
 By default this is `~/go`.
 
-Next, you'll need to check this Git repo out in your Go workspace, under `$GOPATH/src/github.com/CultBeauty/configstore`.
+Next, you'll need to check this Git repo out in your Go workspace, under `$GOPATH/src/github.com/motns/configstore`.
 
-> NOTE: The `github.com/CultBeauty/configstore` bit is important, otherwise Go will not be able to resolve the internal dependency between packages of the application
+> NOTE: The `github.com/motns/configstore` bit is important, otherwise Go will not be able to resolve the internal dependency between packages of the application
 
 Finally, you need to install [Glide](https://glide.sh/), a dependency manager for Go packages. On Mac OS, you can do this via Homebrew:
 ```

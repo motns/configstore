@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"gopkg.in/urfave/cli.v1"
 	"sort"
-	"github.com/CultBeauty/configstore/client"
+	"github.com/motns/configstore/client"
 )
 
 func cmdLs(c *cli.Context) error {

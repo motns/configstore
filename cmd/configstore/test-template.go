@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"gopkg.in/urfave/cli.v1"
 	"text/template"
-	"github.com/CultBeauty/configstore/client"
+	"github.com/motns/configstore/client"
 )
 
 func cmdTestTemplate(c *cli.Context) error {

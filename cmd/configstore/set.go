@@ -7,7 +7,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 	"os"
 	"io/ioutil"
-	"github.com/CultBeauty/configstore/client"
+	"github.com/motns/configstore/client"
 )
 
 func cmdSet(c *cli.Context) error {

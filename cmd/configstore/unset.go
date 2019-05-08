@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"gopkg.in/urfave/cli.v1"
-	"github.com/CultBeauty/configstore/client"
+	"github.com/motns/configstore/client"
 )
 
 func cmdUnset(c *cli.Context) error {
