@@ -81,6 +81,52 @@ func TestGet(t *testing.T) {
 	}
 }
 
+func TestProcessTemplateString(t *testing.T) {
+	c, err := NewConfigstoreClient("../test_data/example_configstore.json", "", true)
+
+	if err != nil {
+		t.Errorf("failed to initialise configstore client: %s", err)
+	}
+
+	out, err := c.ProcessTemplateString("some_command {{.username}} {{.password}}")
+
+	if err != nil {
+		t.Errorf("failed to process template: %s", err)
+	}
+
+	if out != "some_command admin supersecret" {
+		t.Errorf("expected \"some_command admin supersecret\" got \"%s\"", out)
+	}
+}
+
+func TestTestTemplateString(t *testing.T) {
+	c, err := NewConfigstoreClient("../test_data/example_configstore.json", "", true)
+
+	if err != nil {
+		t.Errorf("failed to initialise configstore client: %s", err)
+	}
+
+	result1, err := c.TestTemplateString("some_command {{.username}} {{.password}}")
+
+	if err != nil {
+		t.Errorf("failed to test template: %s", err)
+	}
+
+	if result1 != true {
+		t.Error("expected true got false")
+	}
+
+	result2, err := c.TestTemplateString("some_command {{.foo}}")
+
+	if err == nil {
+		t.Error("expected \"template: tmp:1:15: executing \"tmp\" at <.foo>: map has no entry for key \"foo\"\" got nil")
+	}
+
+	if result2 != false {
+		t.Error("expected false got true")
+	}
+}
+
 func TestGetWithOverride(t *testing.T) {
 	c, err := NewConfigstoreClient("../test_data/example_configstore.json", "../test_data/override.json", true)
 

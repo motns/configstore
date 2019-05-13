@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"errors"
-	"io/ioutil"
-	"gopkg.in/urfave/cli.v1"
-	"text/template"
+	"fmt"
 	"github.com/motns/configstore/client"
+	"gopkg.in/urfave/cli.v1"
+	"io/ioutil"
 )
 
 func cmdTestTemplate(c *cli.Context) error {
@@ -22,19 +21,13 @@ func cmdTestTemplate(c *cli.Context) error {
 		return errors.New("you have to specify the path to a Go template file as the first argument")
 	}
 
-	keys := cc.GetAllKeys()
-	templateValues := make(map[string]string, len(keys))
-	for _, key := range keys {
-		templateValues[key] = "dummy_value" // Actual value doesn't matter
-	}
-
-	// Check if template can be parsed
-	tmpl, err := template.ParseFiles(templateFilePath)
+	b, err := ioutil.ReadFile(templateFilePath)
 	if err != nil {
 		return err
 	}
+	s := string(b)
 
-	err = tmpl.Option("missingkey=error").Execute(ioutil.Discard, templateValues)
+	_, err = cc.TestTemplateString(s)
 	if err != nil {
 		return err
 	}

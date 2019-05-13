@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"strings"
+	"text/template"
 )
 
 type ConfigstoreClient struct {
@@ -59,6 +61,22 @@ func (c ConfigstoreClient) dbContainsEncrypted() bool {
 
 	return false
 }
+
+func (c *ConfigstoreClient) ensureLatestVersion() error {
+	if c.db.Version == 2 {
+		return nil // Nothing to do - already latest version
+	} else {
+		err := c.initEncryption()
+		if err != nil {
+			return err
+		}
+
+		c.db.MasterKeyId = c.encryption.masterKeyId
+		c.db.Version = 2
+		return saveDB(c.dbFile, c.db)
+	}
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -193,7 +211,7 @@ func (c *ConfigstoreClient) Set(key string, rawValue []byte, isSecret bool) erro
 
 func (c *ConfigstoreClient) Unset(key string) error {
 	if key == "" {
-		return errors.New("You have to specify a non-empty Key to unset")
+		return errors.New("you have to specify a non-empty Key to unset")
 	}
 
 	delete(c.db.Data, key)
@@ -206,20 +224,47 @@ func (c *ConfigstoreClient) Unset(key string) error {
 	return nil
 }
 
-func (c *ConfigstoreClient) EnsureLatestVersion() error {
-	if c.db.Version == 2 {
-		return nil // Nothing to do - already latest version
-	} else {
-		err := c.initEncryption()
-		if err != nil {
-			return err
-		}
-
-		c.db.MasterKeyId = c.encryption.masterKeyId
-		c.db.Version = 2
-		return saveDB(c.dbFile, c.db)
+func (c *ConfigstoreClient) ProcessTemplateString(t string) (string, error) {
+	tmpl, err := template.New("tmp").Parse(t)
+	if err != nil {
+		return "", err
 	}
+
+	templateValues, err := c.GetAll()
+	if err != nil {
+		return "", err
+	}
+
+	var b strings.Builder
+
+	err = tmpl.Option("missingkey=error").Execute(&b, templateValues)
+	if err != nil {
+		return "", err
+	}
+
+	return b.String(), nil
 }
+
+func (c *ConfigstoreClient) TestTemplateString(t string) (bool, error) {
+	tmpl, err := template.New("tmp").Parse(t)
+	if err != nil {
+		return false, err
+	}
+
+	keys := c.GetAllKeys()
+	templateValues := make(map[string]string, len(keys))
+	for _, key := range keys {
+		templateValues[key] = "dummy_value" // Actual value doesn't matter
+	}
+
+	err = tmpl.Option("missingkey=error").Execute(ioutil.Discard, templateValues)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -259,7 +304,7 @@ func NewConfigstoreClient(dbFile string, overrideFile string, ignoreRole bool) (
 		overrides:  overrides,
 	}
 
-	if err := c.EnsureLatestVersion(); err != nil {
+	if err := c.ensureLatestVersion(); err != nil {
 		return nil, err
 	}
 
