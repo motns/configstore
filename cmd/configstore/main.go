@@ -184,6 +184,28 @@ func main() {
 			ArgsUsage: "/path/to/database1 /path/to/database2",
 			Action:    cmdCompareKeys,
 		},
+		{
+			Name:      "exec",
+			Usage:     "Execute a shell command which contains template variables",
+			ArgsUsage: "command_template",
+			Action:    cmdExec,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "db",
+					Usage: "The Configstore JSON file",
+					Value: "./configstore.json",
+				},
+				cli.StringFlag{
+					Name:  "override",
+					Usage: "JSON file with key-value pairs for overriding non-secret values in Configstore DB",
+					Value: "",
+				},
+				cli.BoolFlag{
+					Name:  "ignore-role",
+					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
+				},
+			},
+		},
 	}
 
 	app.Run(os.Args)

@@ -150,6 +150,15 @@ and feeds them through to the template engine with dummy values. This is useful,
 anywhere (for example on a CI server), even if you don't have permissions to use the AWS KMS key for decrypting values.
 
 
+### Executing Shell Commands
+
+As an extension to the template processing capability, you can also call shell commands via Configstore, with template
+variables filled in before execution:
+```bash
+configstore exec "my_command {{.foo}} {{.bar}}"
+```
+
+
 ### Overrides
 
 Overrides are helpful in cases where you have a single Configstore for an environment, but you need two or more versions
