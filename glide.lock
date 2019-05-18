@@ -1,8 +1,8 @@
-hash: 71d80cc637a1b1b25cf75777c0a3233936393e9fef66afd4ebe9d542172a7cca
-updated: 2019-05-07T23:33:48.121047+01:00
+hash: 248902010e076429621c371157ec3b986fe8849293fa334cfe1246ca2b31815e
+updated: 2019-05-18T23:33:31.310827+01:00
 imports:
 - name: github.com/aws/aws-sdk-go
-  version: bdd9cf7816bd404510114e712564cf76683b8355
+  version: 0db84dcbcc56669065730700b054eb6d1438a0f7
   subpackages:
   - aws
   - aws/awserr
@@ -40,6 +40,10 @@ imports:
   version: bf9dde6d0d2c004a008c27aaee91170c786f6db8
 - name: github.com/jmespath/go-jmespath
   version: bd40a432e4c76585ef6b72d3fd96fb9b6dc7b68d
+- name: github.com/mattn/go-runewidth
+  version: 703b5e6b11ae25aeb2af9ebb5d5fdf8fa2575211
+- name: github.com/olekukonko/tablewriter
+  version: 1c0837c15a0bac7871496dfce5dcdd308e0a330f
 - name: golang.org/x/crypto
   version: cbc3d0884eac986df6e78a039b8792e869bff863
   subpackages:

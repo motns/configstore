@@ -206,6 +206,120 @@ func main() {
 				},
 			},
 		},
+		{
+			Name: "package",
+			Usage: "Manage a Configstore package structure containing environments and templates",
+			Subcommands: []cli.Command{
+				{
+					Name:      "init",
+					Usage:     "Initialise Configstore package directory structure",
+					ArgsUsage: "basedir",
+					Action:    cmdPackageInit,
+				},
+				{
+					Name:      "create_env",
+					Usage:     "Create a Configstore DB for a new environment or sub-environment",
+					ArgsUsage: "env[/subenv]",
+					Action:    cmdPackageCreate,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "basedir",
+							Usage: "The base directory for the configuration package structure",
+							Value: "./config",
+						},
+						cli.StringFlag{
+							Name:  "region",
+							Usage: "The AWS Region the KMS key will be created in",
+							Value: "eu-west-1",
+						},
+						cli.StringFlag{
+							Name:  "role",
+							Usage: "The IAM Role to assume before executing AWS API operations",
+						},
+						cli.StringFlag{
+							Name:  "master-key",
+							Usage: "The name of the AWS KMS key to be used as the master encryption key",
+						},
+						cli.BoolFlag{
+							Name:  "insecure",
+							Usage: "Initialise this Configstore with a plain-text encryption key (not backed by KMS)",
+						},
+					},
+				},
+				{
+					Name:      "set",
+					Usage:     "Set a new value, or update an existing one in the Configstore of a given environment",
+					ArgsUsage: "env[/subenv] key value",
+					Action:    cmdPackageSet,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "basedir",
+							Usage: "The base directory for the configuration package structure",
+							Value: "./config",
+						},
+						cli.BoolFlag{
+							Name:  "secret",
+							Usage: "Whether this value is sensitive (to be encrypted)",
+						},
+						cli.BoolFlag{
+							Name:  "ignore-role",
+							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
+						},
+					},
+				},
+				{
+					Name:      "get",
+					Usage:     "Get a value from the Configstore in a given environment",
+					ArgsUsage: "env[/subenv] key",
+					Action:    cmdPackageGet,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "basedir",
+							Usage: "The base directory for the configuration package structure",
+							Value: "./config",
+						},
+						cli.BoolFlag{
+							Name:  "ignore-role",
+							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
+						},
+					},
+				},
+				{
+					Name:      "unset",
+					Usage:     "Remove a value from the Configstore for a given environment",
+					ArgsUsage: "env[/subenv] key",
+					Action:    cmdPackageUnset,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "basedir",
+							Usage: "The base directory for the configuration package structure",
+							Value: "./config",
+						},
+						cli.BoolFlag{
+							Name:  "ignore-role",
+							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
+						},
+					},
+				},
+				{
+					Name:      "ls",
+					Usage:     "List all keys and their respective values from each environment or sub-environment in table format",
+					ArgsUsage: "[env]",
+					Action:    cmdPackageLs,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "basedir",
+							Usage: "The base directory for the configuration package structure",
+							Value: "./config",
+						},
+						cli.BoolFlag{
+							Name:  "ignore-role",
+							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
+						},
+					},
+				},
+			},
+		},
 	}
 
 	app.Run(os.Args)

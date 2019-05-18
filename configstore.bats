@@ -76,3 +76,52 @@
   run bin/darwin/amd64/configstore test_template --db test_data/example_configstore.json test_data/invalid_template.txt
   [ "$status" -eq 1 ]
 }
+
+@test "configstore package" {
+  rm  -rf test_data/package_test
+  run bin/darwin/amd64/configstore package init test_data/package_test
+  [ "$status" -eq 0 ]
+  [ -d "test_data/package_test" ]
+  [ -d "test_data/package_test/env" ]
+  [ -d "test_data/package_test/template" ]
+
+  run bin/darwin/amd64/configstore package create_env --insecure --basedir test_data/package_test dev
+  [ "$status" -eq 0 ]
+  [ -d "test_data/package_test/env/dev" ]
+  [ -e "test_data/package_test/env/dev/configstore.json" ]
+
+  run bin/darwin/amd64/configstore package create_env --basedir test_data/package_test dev/local
+  [ "$status" -eq 0 ]
+  [ -d "test_data/package_test/env/dev/subenv/local" ]
+  [ -e "test_data/package_test/env/dev/subenv/local/override.json" ]
+
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev username root
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore package get --basedir test_data/package_test dev username
+  [ "$status" -eq 0 ]
+  [ "$output" = "root" ]
+
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev/local username admin
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore package get --basedir test_data/package_test dev/local username
+  [ "$status" -eq 0 ]
+  [ "$output" = "admin" ]
+
+  run bin/darwin/amd64/configstore package unset --basedir test_data/package_test dev/local username
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore package get --basedir test_data/package_test dev/local username
+  [ "$status" -eq 0 ]
+  [ "$output" = "root" ]
+
+  run bin/darwin/amd64/configstore package unset --basedir test_data/package_test dev username
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore package get --basedir test_data/package_test dev username
+  [ "$status" -eq 1 ]
+  [ "$output" = "key does not exist in Configstore: username" ]
+
+  rm  -rf test_data/package_test
+}

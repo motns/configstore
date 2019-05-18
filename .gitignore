@@ -1,5 +1,7 @@
 bin
 vendor
 configstore.json
+config/*
 *.tar.gz
 test_data/configstore.json
+test_data/package_test
