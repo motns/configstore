@@ -318,6 +318,23 @@ func main() {
 						},
 					},
 				},
+				{
+					Name:      "process_templates",
+					Usage:     "Process all template files using values from the environment and (optional) sub-environment provided",
+					ArgsUsage: "env[/subenv] output_dir",
+					Action:    cmdPackageProcessTemplates,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "basedir",
+							Usage: "The base directory for the configuration package structure",
+							Value: "./config",
+						},
+						cli.BoolFlag{
+							Name:  "ignore-role",
+							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
+						},
+					},
+				},
 			},
 		},
 	}

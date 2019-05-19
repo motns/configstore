@@ -13,6 +13,47 @@ import (
 )
 
 
+func DirExists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
+}
+
+func ListDirs(basedir string) ([]string, error) {
+	dirs := make([]string, 0)
+	entries, err := ioutil.ReadDir(basedir)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, e := range entries {
+		if e.IsDir() {
+			dirs = append(dirs, e.Name())
+		}
+	}
+
+	return dirs, nil
+}
+
+func ListFiles(basedir string) ([]string, error) {
+	files := make([]string, 0)
+	entries, err := ioutil.ReadDir(basedir)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, e := range entries {
+		name := e.Name()
+		e.Mode()
+		if !e.IsDir() && name[0:1] != "." {
+			files = append(files, name)
+		}
+	}
+
+	return files, nil
+}
+
 func ParseEnv(s string, basedir string) (string, string, error)  {
 	if s == "" {
 		return "", "", errors.New("environment name cannot be empty")
@@ -47,14 +88,12 @@ func ParseEnv(s string, basedir string) (string, string, error)  {
 
 
 func EnvExists(basedir string, env string) bool {
-	_, err := os.Stat(basedir + "/env/" + env)
-	return !os.IsNotExist(err)
+	return DirExists(basedir + "/env/" + env)
 }
 
 
 func SubEnvExists(basedir string, env string, subenv string) bool {
-	_, err := os.Stat(basedir + "/env/" + env + "/subenv/" + subenv)
-	return !os.IsNotExist(err)
+	return DirExists(basedir + "/env/" + env + "/subenv/" + subenv)
 }
 
 

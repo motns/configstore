@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/motns/configstore/client"
 	"gopkg.in/urfave/cli.v1"
-	"io/ioutil"
 	"os"
 	"sort"
 )
@@ -31,17 +30,10 @@ func cmdPackageLs(c *cli.Context) error {
 	}
 
 	if env == "" {
-		envs := make([]string, 0)
-		entries, err := ioutil.ReadDir(basedir + "/env")
+		envs, err := ListDirs(basedir + "/env")
 
 		if err != nil {
 			return err
-		}
-
-		for _, e := range entries {
-			if e.IsDir() {
-				envs = append(envs, e.Name())
-			}
 		}
 
 		sort.Strings(envs)
@@ -108,16 +100,10 @@ func cmdPackageLs(c *cli.Context) error {
 		var subenvs []string
 
 		if _, err = os.Stat(basedir + "/env/" + env + "/subenv"); !os.IsNotExist(err) {
-			entries, err := ioutil.ReadDir(basedir + "/env/" + env + "/subenv")
+			subenvs, err = ListDirs(basedir + "/env/" + env + "/subenv")
 
 			if err != nil {
 				return err
-			}
-
-			for _, e := range entries {
-				if e.IsDir() {
-					subenvs = append(subenvs, e.Name())
-				}
 			}
 		}
 
