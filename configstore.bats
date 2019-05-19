@@ -78,12 +78,17 @@
 }
 
 @test "configstore package" {
-  rm  -rf test_data/package_test
+  rm -rf test_data/package_test
+  rm -rf test_data/out_test
+  mkdir test_data/out_test
+
   run bin/darwin/amd64/configstore package init test_data/package_test
   [ "$status" -eq 0 ]
   [ -d "test_data/package_test" ]
   [ -d "test_data/package_test/env" ]
   [ -d "test_data/package_test/template" ]
+
+  cp test_data/valid_template.txt test_data/package_test/template/valid_template.txt
 
   run bin/darwin/amd64/configstore package create_env --insecure --basedir test_data/package_test dev
   [ "$status" -eq 0 ]
@@ -102,12 +107,21 @@
   [ "$status" -eq 0 ]
   [ "$output" = "root" ]
 
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev password supersecret
+  [ "$status" -eq 0 ]
+
   run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev/local username admin
   [ "$status" -eq 0 ]
 
   run bin/darwin/amd64/configstore package get --basedir test_data/package_test dev/local username
   [ "$status" -eq 0 ]
   [ "$output" = "admin" ]
+
+  run bin/darwin/amd64/configstore package process_templates --basedir test_data/package_test dev test_data/out_test
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore package process_templates --basedir test_data/package_test dev/local test_data/out_test
+  [ "$status" -eq 0 ]
 
   run bin/darwin/amd64/configstore package unset --basedir test_data/package_test dev/local username
   [ "$status" -eq 0 ]
@@ -124,4 +138,5 @@
   [ "$output" = "key does not exist in Configstore: username" ]
 
   rm  -rf test_data/package_test
+  rm -rf test_data/out_test
 }
