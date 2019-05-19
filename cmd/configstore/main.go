@@ -335,6 +335,18 @@ func main() {
 						},
 					},
 				},
+				{
+					Name:      "test",
+					Usage:     "Run checks on the Configstore DBs and templates in this package",
+					Action:    cmdPackageTest,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "basedir",
+							Usage: "The base directory for the configuration package structure",
+							Value: "./config",
+						},
+					},
+				},
 			},
 		},
 	}

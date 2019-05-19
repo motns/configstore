@@ -9,9 +9,25 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strings"
 )
 
+func SliceContains(s []string, el string) bool {
+	for _, v := range s {
+		if v == el {
+			return true
+		}
+	}
+
+	return false
+}
+
+func PrintLines(ls []string) {
+	for _, s := range ls {
+		println(s)
+	}
+}
 
 func DirExists(path string) bool {
 	_, err := os.Stat(path)
@@ -243,4 +259,51 @@ func RenderTable(allKeys []string, allValues map[string]map[string]string, envs 
 	}
 
 	table.Render()
+}
+
+
+func CompareKeys(cc1 *client.ConfigstoreClient, cc2 *client.ConfigstoreClient) ([]string, error) {
+	out := make([]string, 0)
+
+	db1Keys := cc1.GetAllKeys()
+	db2Keys := cc2.GetAllKeys()
+
+	notInDb1 := make([]string, 0)
+	notInDb2 := make([]string, 0)
+
+	for _, key := range db1Keys {
+		if !SliceContains(db2Keys, key) {
+			notInDb2 = append(notInDb2, key)
+		}
+	}
+
+	for _, key := range db2Keys {
+		if !SliceContains(db1Keys, key) {
+			notInDb1 = append(notInDb1, key)
+		}
+	}
+
+	if len(notInDb1) == 0 && len(notInDb2) == 0 {
+		return nil, nil
+	} else {
+		if len(notInDb1) > 0 {
+			out = append(out, "Keys not in DB 1:")
+			sort.Strings(notInDb1)
+
+			for _, key := range notInDb1 {
+				out = append(out, "\""+key+"\"")
+			}
+		}
+
+		if len(notInDb2) > 0 {
+			out = append(out, "Keys not in DB 2:")
+			sort.Strings(notInDb2)
+
+			for _, key := range notInDb2 {
+				out = append(out, "\""+key+"\"")
+			}
+		}
+
+		return out, errors.New("databases did not match")
+	}
 }
