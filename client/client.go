@@ -164,7 +164,7 @@ func (c *ConfigstoreClient) GetAll() (map[string]string, error) {
 }
 
 func (c *ConfigstoreClient) GetAllKeys() []string {
-	keys := make([]string, len(c.db.Data))
+	keys := make([]string, 0)
 
 	for k := range c.db.Data {
 		keys = append(keys, k)

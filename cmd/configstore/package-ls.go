@@ -89,11 +89,31 @@ func cmdPackageLs(c *cli.Context) error {
 			cols := make([]string, 0)
 			cols = append(cols, k)
 
+			firstVal := allValues[envs[0]][k]
+			hasDiff := false
+
 			for _, e := range envs {
-				cols = append(cols, allValues[e][k])
+				v := allValues[e][k]
+				var formatted string
+
+				if firstVal != v {
+					hasDiff = true
+				}
+
+				if v == "" {
+					formatted = formatRed("(missing)")
+				} else {
+					formatted = v
+				}
+
+				cols = append(cols, formatted)
 			}
 
-			table.Append(cols)
+			if hasDiff {
+				table.Append(formatAllYellow(cols))
+			} else {
+				table.Append(cols)
+			}
 		}
 
 		table.Render()
