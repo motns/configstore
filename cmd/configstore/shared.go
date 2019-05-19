@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/howeyc/gopass"
 	"github.com/motns/configstore/client"
+	"github.com/olekukonko/tablewriter"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -156,4 +157,51 @@ func SetCmdShared(cc *client.ConfigstoreClient, isSecret bool, key string, val s
 	}
 
 	return nil
+}
+
+
+func RenderTable(allKeys []string, allValues map[string]map[string]string, envs []string, isSubEnv bool) {
+	var headers []string
+
+	if isSubEnv {
+		headers = append([]string{"Key / SubEnv"}, envs...)
+	} else {
+		headers = append([]string{"Key / Env"}, envs...)
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader(headers)
+
+	for _, k := range allKeys {
+		cols := make([]string, 0)
+		cols = append(cols, k)
+
+		firstVal := allValues[envs[0]][k]
+		hasDiff := false
+
+		for _, e := range envs {
+			v := allValues[e][k]
+			var formatted string
+
+			if firstVal != v {
+				hasDiff = true
+			}
+
+			if v == "" {
+				formatted = formatRed("(missing)")
+			} else {
+				formatted = v
+			}
+
+			cols = append(cols, formatted)
+		}
+
+		if hasDiff {
+			table.Append(formatAllYellow(cols))
+		} else {
+			table.Append(cols)
+		}
+	}
+
+	table.Render()
 }

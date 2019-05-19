@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/motns/configstore/client"
-	"github.com/olekukonko/tablewriter"
 	"gopkg.in/urfave/cli.v1"
 	"io/ioutil"
 	"os"
@@ -17,6 +16,9 @@ func cmdPackageLs(c *cli.Context) error {
 
 	var env string
 
+	// If no environment is defined, we'll gather all "main" environments, load all their keys, and build
+	// a table with the keys as rows and the environments as columns.
+	// Missing keys, and keys with a values that differs between environments will be highlighted.
 	if envStr != "" {
 		var err error
 		env, _, err = ParseEnv(envStr, basedir)
@@ -47,6 +49,7 @@ func cmdPackageLs(c *cli.Context) error {
 		configstores := make(map[string]*client.ConfigstoreClient)
 
 		for _, env := range envs {
+			println("Loading Configstore: " + env)
 			cc, err := ConfigstoreForEnv(basedir, env, "", ignoreRole)
 
 			if err != nil {
@@ -80,45 +83,76 @@ func cmdPackageLs(c *cli.Context) error {
 		}
 
 		sort.Strings(allKeys)
-		headers := append([]string{"Key / Env"}, envs...)
 
-		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader(headers)
+		RenderTable(allKeys, allValues, envs, false)
 
-		for _, k := range allKeys {
-			cols := make([]string, 0)
-			cols = append(cols, k)
+	} else { // List sub-environments under the specified main environment *only*
+		cc, err := ConfigstoreForEnv(basedir, env, "", ignoreRole)
 
-			firstVal := allValues[envs[0]][k]
-			hasDiff := false
+		if err != nil {
+			return err
+		}
 
-			for _, e := range envs {
-				v := allValues[e][k]
-				var formatted string
+		keySet := make(map[string]int)
+		ccValues, err := cc.GetAll()
+		ccKeys := cc.GetAllKeys()
 
-				if firstVal != v {
-					hasDiff = true
-				}
+		if err != nil {
+			return err
+		}
 
-				if v == "" {
-					formatted = formatRed("(missing)")
-				} else {
-					formatted = v
-				}
+		for _, k := range ccKeys {
+			keySet[k] = 0
+		}
 
-				cols = append(cols, formatted)
+		var subenvs []string
+
+		if _, err = os.Stat(basedir + "/env/" + env + "/subenv"); !os.IsNotExist(err) {
+			entries, err := ioutil.ReadDir(basedir + "/env/" + env + "/subenv")
+
+			if err != nil {
+				return err
 			}
 
-			if hasDiff {
-				table.Append(formatAllYellow(cols))
-			} else {
-				table.Append(cols)
+			for _, e := range entries {
+				if e.IsDir() {
+					subenvs = append(subenvs, e.Name())
+				}
 			}
 		}
 
-		table.Render()
-	} else {
+		sort.Strings(subenvs)
 
+		allValues := make(map[string]map[string]string)
+		allValues["(default)"] = make(map[string]string)
+
+		for _, se := range subenvs {
+			data, err := LoadEnvOverride(basedir, env, se)
+
+			if err != nil {
+				return err
+			}
+
+			allValues[se] = data
+
+			for k := range data {
+				keySet[k] = 0
+			}
+		}
+
+		allKeys := make([]string, 0)
+
+		for k := range keySet {
+			allKeys = append(allKeys, k)
+			allValues["(default)"][k] = ccValues[k]
+		}
+
+		sort.Strings(allKeys)
+
+		// Prepend this for display purposes only
+		subenvs = append([]string{"(default)"}, subenvs...)
+
+		RenderTable(allKeys, allValues, subenvs, true)
 	}
 
 	return nil
