@@ -11,3 +11,4 @@ is then used to decrypt the secret value. The decrypted **Data Key** is then dis
 
 1. [Usage](USAGE.md)
 2. [Development](DEVELOPMENT.md)
+3. [Configstore Package](PACKAGE.md)
