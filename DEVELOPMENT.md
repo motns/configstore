@@ -65,9 +65,9 @@ By default GitHub insist on listing every Tag as a release, but don't let this "
 
  1. Go to the repo on GitHub
  2. Click the "Releases" tab
- 3. Click the "Draft a new release" button
- 4. Type the tag you just created into "Tag version"
- 5. Type the version number prefixed by "Release " into "Release Title" (for example "Release v0.0.4")
+ 3. Select "Tags"
+ 4. In the list of tags, you should see the one you just created. Click the menu (...) on the right hand-side, and click "Create release"
+ 5. Type the version number prefixed by "Release " into "Release Title" (for example "Release v2.0.0")
  6. You may want to type a changelog into "Description" for good measure
  7. Upload the archive files created by the release script above
  8. Click "Publish release"

@@ -28,9 +28,10 @@ run_cmd() {
 
 echo "Building archives for supported platforms..."
 
-run_cmd "tar -czf configstore-${version}-darwin-amd64.tar.gz -C bin/darwin configstore"
-run_cmd "tar -czf configstore-${version}-linux-amd64.tar.gz -C bin/linux configstore"
-run_cmd "tar -czf configstore-${version}-windows-amd64.tar.gz -C bin/windows configstore"
+run_cmd "tar -czf configstore-${version}-darwin-amd64.tar.gz -C bin/darwin/amd64 configstore"
+run_cmd "tar -czf configstore-${version}-linux-amd64.tar.gz -C bin/linux/amd64 configstore"
+run_cmd "tar -czf configstore-${version}-openbsd-amd64.tar.gz -C bin/openbsd/amd64 configstore"
+run_cmd "tar -czf configstore-${version}-windows-amd64.tar.gz -C bin/windows/amd64 configstore"
 
 echo "Creating Git Tag..."
 run_cmd "git tag v${version}"
