@@ -40,7 +40,7 @@ func TestInitConfigstore(t *testing.T) {
 }
 
 func TestNewConfigstoreClient(t *testing.T) {
-	_, err := NewConfigstoreClient("../test_data/example_configstore.json", "", true)
+	_, err := NewConfigstoreClient("../test_data/example_configstore.json", make([]string, 0), true)
 
 	if err != nil {
 		t.Errorf("failed to initialise configstore client: %s", err)
@@ -48,7 +48,7 @@ func TestNewConfigstoreClient(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	c, err := NewConfigstoreClient("../test_data/example_configstore.json", "", true)
+	c, err := NewConfigstoreClient("../test_data/example_configstore.json", make([]string, 0), true)
 
 	if err != nil {
 		t.Errorf("failed to initialise configstore client: %s", err)
@@ -82,7 +82,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestProcessTemplateString(t *testing.T) {
-	c, err := NewConfigstoreClient("../test_data/example_configstore.json", "", true)
+	c, err := NewConfigstoreClient("../test_data/example_configstore.json", make([]string, 0), true)
 
 	if err != nil {
 		t.Errorf("failed to initialise configstore client: %s", err)
@@ -100,7 +100,7 @@ func TestProcessTemplateString(t *testing.T) {
 }
 
 func TestTestTemplateString(t *testing.T) {
-	c, err := NewConfigstoreClient("../test_data/example_configstore.json", "", true)
+	c, err := NewConfigstoreClient("../test_data/example_configstore.json", make([]string, 0), true)
 
 	if err != nil {
 		t.Errorf("failed to initialise configstore client: %s", err)
@@ -128,7 +128,7 @@ func TestTestTemplateString(t *testing.T) {
 }
 
 func TestGetWithOverride(t *testing.T) {
-	c, err := NewConfigstoreClient("../test_data/example_configstore.json", "../test_data/override.json", true)
+	c, err := NewConfigstoreClient("../test_data/example_configstore.json", []string{"../test_data/override.json"}, true)
 
 	if err != nil {
 		t.Errorf("failed to initialise configstore client: %s", err)
@@ -145,8 +145,36 @@ func TestGetWithOverride(t *testing.T) {
 	}
 }
 
+func TestGetWithMultipleOverrides(t *testing.T) {
+	c, err := NewConfigstoreClient("../test_data/example_configstore.json", []string{"../test_data/override.json","../test_data/override2.json"}, true)
+
+	if err != nil {
+		t.Errorf("failed to initialise configstore client: %s", err)
+	}
+
+	username, err := c.Get("username")
+
+	if err != nil {
+		t.Errorf("failed to get username key: %s", err)
+	}
+
+	if username != "root" {
+		t.Errorf("expected \"root\" got %s", username)
+	}
+
+	email, err := c.Get("email")
+
+	if err != nil {
+		t.Errorf("failed to get email key: %s", err)
+	}
+
+	if email != "peter.parker2@example.com" {
+		t.Errorf("expected \"peter.parker2@example.com\" got %s", email)
+	}
+}
+
 func TestGetAll(t *testing.T) {
-	c, err := NewConfigstoreClient("../test_data/example_configstore.json", "", true)
+	c, err := NewConfigstoreClient("../test_data/example_configstore.json", make([]string, 0), true)
 
 	if err != nil {
 		t.Errorf("failed to initialise configstore client: %s", err)
@@ -180,7 +208,7 @@ func TestGetAll(t *testing.T) {
 }
 
 func TestGetAllWithOverride(t *testing.T) {
-	c, err := NewConfigstoreClient("../test_data/example_configstore.json", "../test_data/override.json", true)
+	c, err := NewConfigstoreClient("../test_data/example_configstore.json", []string{"../test_data/override.json"}, true)
 
 	if err != nil {
 		t.Errorf("failed to initialise configstore client: %s", err)

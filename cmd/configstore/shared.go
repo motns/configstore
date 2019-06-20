@@ -130,7 +130,7 @@ func LoadEnvOverride(basedir string, env string, subenv string) (map[string]stri
 
 
 func SaveEnvOverride(basedir string, env string, subenv string, override map[string]string) error {
-	jsonStr, err := json.Marshal(override)
+	jsonStr, err := json.MarshalIndent(override, "", "  ")
 
 	if err != nil {
 		return err
@@ -143,17 +143,17 @@ func SaveEnvOverride(basedir string, env string, subenv string, override map[str
 func ConfigstoreForEnv(basedir string, env string, subenv string, ignoreRole bool) (*client.ConfigstoreClient, error) {
 	dbFile := basedir + "/env/" + env + "/configstore.json"
 
-	overrideFile := ""
+	overrideFiles := make([]string, 0)
 
 	if subenv != "" {
 		if SubEnvExists(basedir, env, subenv) == false {
 			return nil, errors.New("sub-environment doesn't exists: " + env + "/" + subenv)
 		}
 
-		overrideFile = basedir + "/env/" + env + "/subenv/" + subenv + "/override.json"
+		overrideFiles = append(overrideFiles, basedir + "/env/" + env + "/subenv/" + subenv + "/override.json")
 	}
 
-	cc, err := client.NewConfigstoreClient(dbFile, overrideFile, ignoreRole)
+	cc, err := client.NewConfigstoreClient(dbFile, overrideFiles, ignoreRole)
 	if err != nil {
 		return nil, err
 	}

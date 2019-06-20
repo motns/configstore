@@ -23,6 +23,23 @@ type ConfigstoreClient struct {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Private
 
+func loadOverrides(paths []string) (map[string]string, error) {
+	var overrides = make(map[string]string)
+
+	for _, path := range paths {
+		m, err := loadOverride(path)
+		if err != nil {
+			return nil, err
+		}
+
+		for k, v := range m {
+			overrides[k] = v
+		}
+	}
+
+	return overrides, nil
+}
+
 func loadOverride(path string) (map[string]string, error) {
 	var overrides = make(map[string]string)
 
@@ -270,7 +287,7 @@ func (c *ConfigstoreClient) TestTemplateString(t string) (bool, error) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Factory
 
-func NewConfigstoreClient(dbFile string, overrideFile string, ignoreRole bool) (*ConfigstoreClient, error) {
+func NewConfigstoreClient(dbFile string, overrideFiles []string, ignoreRole bool) (*ConfigstoreClient, error) {
 	db, err := loadDB(dbFile)
 	if err != nil {
 		return nil, err
@@ -278,8 +295,8 @@ func NewConfigstoreClient(dbFile string, overrideFile string, ignoreRole bool) (
 
 	var overrides = make(map[string]string)
 
-	if overrideFile != "" {
-		overrides, err = loadOverride(overrideFile)
+	if len(overrideFiles) != 0 {
+		overrides, err = loadOverrides(overrideFiles)
 		if err != nil {
 			return nil, err
 		}

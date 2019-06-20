@@ -18,12 +18,12 @@ func cmdCompareKeys(c *cli.Context) error {
 		return errors.New("you have to provide a Configstore DB to compare against as the second argument")
 	}
 
-	cc1, err := client.NewConfigstoreClient(dbFile1, "", c.Bool("ignore-role"))
+	cc1, err := client.NewConfigstoreClient(dbFile1, make([]string, 0), c.Bool("ignore-role"))
 	if err != nil {
 		return err
 	}
 
-	cc2, err := client.NewConfigstoreClient(dbFile2, "", c.Bool("ignore-role"))
+	cc2, err := client.NewConfigstoreClient(dbFile2, make([]string, 0), c.Bool("ignore-role"))
 	if err != nil {
 		return err
 	}

@@ -155,16 +155,17 @@ configstore exec "my_command {{.foo}} {{.bar}}"
 Overrides are helpful in cases where you have a single Configstore for an environment, but you need two or more versions
 of it with only minor differences. Instead of having to duplicate the entire Configstore DB, you can override one or more
 keys via an override file, which is basically just a JSON file with a single, flat object in it, where both keys and values
-are strings. 
+are strings.
 
 Overrides are supported for any command which reads or outputs data (`get`, `ls`, `process_template`, etc.) via the
-`--override` flag.
+`--override` flag. You can provide multiple override files by passing multiple instances of `--override /path/to/file.json`. 
 
 The rules for overrides are:
- * You can only apply one override file at a time
+ * When given multiple override files, they are processed left to right, merging them together into a single override that's used internally.
+   Basically, if you pass three override files which each contain the same key, the last one will "win".
  * Overrides cannot contain any encrypted values, and therefore can't be used to override secrets. If you have different secret values,
    you should have different Configstore DBs instead.
- * You can't use the override to append new keys, and your override can only contain keys which exist in the Configstore DB  
+ * Your override can only contain keys which exist in the Configstore DB; you can't use the override to append new keys.
 
 
 ### Using IAM Roles

@@ -8,7 +8,7 @@ import (
 )
 
 func cmdLs(c *cli.Context) error {
-	cc, err := client.NewConfigstoreClient(c.String("db"), c.String("override"), c.Bool("ignore-role"))
+	cc, err := client.NewConfigstoreClient(c.String("db"), c.StringSlice("override"), c.Bool("ignore-role"))
 	if err != nil {
 		return err
 	}

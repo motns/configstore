@@ -12,7 +12,7 @@ func main() {
 	app.Usage = "Manage plain-text and encrypted credentials, using local JSON file as storage"
 	app.UsageText = "configstore [global options] command [command options]"
 	app.EnableBashCompletion = true
-	app.Version = "2.0.0"
+	app.Version = "2.1.0"
 
 	app.Commands = []cli.Command{
 		{
@@ -76,10 +76,9 @@ func main() {
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
 				},
-				cli.StringFlag{
+				cli.StringSliceFlag{
 					Name:  "override",
 					Usage: "JSON file with key-value pairs for overriding non-secret values in Configstore DB",
-					Value: "",
 				},
 				cli.BoolFlag{
 					Name:  "ignore-role",
@@ -98,10 +97,9 @@ func main() {
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
 				},
-				cli.StringFlag{
+				cli.StringSliceFlag{
 					Name:  "override",
 					Usage: "JSON file with key-value pairs for overriding non-secret values in Configstore DB",
-					Value: "",
 				},
 				cli.BoolFlag{
 					Name:  "ignore-role",
@@ -119,10 +117,9 @@ func main() {
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
 				},
-				cli.StringFlag{
+				cli.StringSliceFlag{
 					Name:  "override",
 					Usage: "JSON file with key-value pairs for overriding non-secret values in Configstore DB",
-					Value: "",
 				},
 				cli.BoolFlag{
 					Name:  "ignore-role",
@@ -154,10 +151,9 @@ func main() {
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
 				},
-				cli.StringFlag{
+				cli.StringSliceFlag{
 					Name:  "override",
 					Usage: "JSON file with key-value pairs for overriding non-secret values in Configstore DB",
-					Value: "",
 				},
 				cli.BoolFlag{
 					Name:  "ignore-role",
@@ -195,10 +191,9 @@ func main() {
 					Usage: "The Configstore JSON file",
 					Value: "./configstore.json",
 				},
-				cli.StringFlag{
+				cli.StringSliceFlag{
 					Name:  "override",
 					Usage: "JSON file with key-value pairs for overriding non-secret values in Configstore DB",
-					Value: "",
 				},
 				cli.BoolFlag{
 					Name:  "ignore-role",

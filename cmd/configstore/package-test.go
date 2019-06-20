@@ -23,7 +23,7 @@ func cmdPackageTest(c *cli.Context) error {
 	}
 
 	path1 := basedir + "/env/" + envs[0] + "/configstore.json"
-	cc1, err := client.NewConfigstoreClient(path1, "", true)
+	cc1, err := client.NewConfigstoreClient(path1, make([]string, 0), true)
 
 	// Only run key comparison if we have more than one Configstores
 	if len(envs) != 1 {
@@ -33,7 +33,7 @@ func cmdPackageTest(c *cli.Context) error {
 
 		for _, env := range envs[1:] {
 			path2 := basedir + "/env/" + env + "/configstore.json"
-			cc2, err := client.NewConfigstoreClient(path2, "", true)
+			cc2, err := client.NewConfigstoreClient(path2, make([]string, 0), true)
 
 			if err != nil {
 				return err

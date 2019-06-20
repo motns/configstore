@@ -19,7 +19,7 @@ func cmdPackageSet(c *cli.Context) error {
 	if subenv == "" { // We're updating a main environment
 		dbFile := basedir + "/env/" + env + "/configstore.json"
 
-		cc, err := client.NewConfigstoreClient(dbFile, "", c.Bool("ignore-role"))
+		cc, err := client.NewConfigstoreClient(dbFile, make([]string, 0), c.Bool("ignore-role"))
 		if err != nil {
 			return err
 		}
