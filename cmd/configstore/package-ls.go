@@ -20,7 +20,7 @@ func cmdPackageLs(c *cli.Context) error {
 	// Missing keys, and keys with a values that differs between environments will be highlighted.
 	if envStr != "" {
 		var err error
-		env, _, err = ParseEnv(envStr, basedir)
+		env, _, err = ParseEnv(envStr, basedir, true)
 
 		if err != nil {
 			return err
@@ -42,7 +42,7 @@ func cmdPackageLs(c *cli.Context) error {
 
 		for _, env := range envs {
 			println("Loading Configstore: " + env)
-			cc, err := ConfigstoreForEnv(basedir, env, "", ignoreRole)
+			cc, err := ConfigstoreForEnv(basedir, env, nil, ignoreRole)
 
 			if err != nil {
 				return err
@@ -70,7 +70,7 @@ func cmdPackageLs(c *cli.Context) error {
 
 		allKeys := make([]string, 0)
 
-		for k, _ := range keySet {
+		for k := range keySet {
 			allKeys = append(allKeys, k)
 		}
 
@@ -79,7 +79,7 @@ func cmdPackageLs(c *cli.Context) error {
 		RenderTable(allKeys, allValues, envs, false)
 
 	} else { // List sub-environments under the specified main environment *only*
-		cc, err := ConfigstoreForEnv(basedir, env, "", ignoreRole)
+		cc, err := ConfigstoreForEnv(basedir, env, nil, ignoreRole)
 
 		if err != nil {
 			return err
@@ -113,7 +113,7 @@ func cmdPackageLs(c *cli.Context) error {
 		allValues["(default)"] = make(map[string]string)
 
 		for _, se := range subenvs {
-			data, err := LoadEnvOverride(basedir, env, se)
+			data, err := LoadEnvOverride(basedir, env, []string{se})
 
 			if err != nil {
 				return err

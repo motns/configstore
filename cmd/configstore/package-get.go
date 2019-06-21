@@ -10,13 +10,13 @@ func cmdPackageGet(c *cli.Context) error {
 	envStr := c.Args().Get(0)
 	ignoreRole := c.Bool("ignore-role")
 
-	env, subenv, err := ParseEnv(envStr, basedir)
+	env, subenvs, err := ParseEnv(envStr, basedir, true)
 
 	if err != nil {
 		return err
 	}
 
-	cc, err := ConfigstoreForEnv(basedir, env, subenv, ignoreRole)
+	cc, err := ConfigstoreForEnv(basedir, env, subenvs, ignoreRole)
 	if err != nil {
 		return err
 	}

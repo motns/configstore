@@ -70,53 +70,94 @@ func ListFiles(basedir string) ([]string, error) {
 	return files, nil
 }
 
-func ParseEnv(s string, basedir string) (string, string, error)  {
+func ParseEnv(s string, basedir string, validate bool) (string, []string, error)  {
 	if s == "" {
-		return "", "", errors.New("environment name cannot be empty")
+		return "", nil, errors.New("environment name cannot be empty")
 	}
 
 	var env string
-	var subenv string
+	var subenvs []string
 
 	if strings.Contains(s, "/") {
 		parts := strings.Split(s, "/")
 		env = parts[0]
-		subenv = parts[1]
+		subenvs = parts[1:]
 	} else {
 		env = s
-		subenv = ""
 	}
 
-	if basedir != "" {
-		if EnvExists(basedir, env) == false {
-			return "", "", errors.New("environment doesn't exists: " + env)
-		}
+	//if validate == true {
+	//	if basedir == "" {
+	//		return "", nil, errors.New("basedir cannot be empty")
+	//	}
+	//
+	//	err := CheckEnv(basedir, env)
+	//	if err != nil {
+	//		return "", nil, err
+	//	}
+	//
+	//	if len(subenvs) > 0 {
+	//		err := CheckSubEnvs(basedir, env, subenvs)
+	//		if err != nil {
+	//			return "", nil, err
+	//		}
+	//	}
+	//}
 
-		if subenv != "" {
-			if SubEnvExists(basedir, env, subenv) == false {
-				return "", "", errors.New("sub-environment doesn't exists: " + env + "/" + subenv)
-			}
-		}
-	}
-
-	return env, subenv, nil
+	return env, subenvs, nil
 }
 
+func SubEnvPath(basedir string, env string, subenvs []string) (string, error) {
+	if len(subenvs) == 0 {
+		return "", errors.New("subenvs cannot be empty")
+	}
+	return basedir + "/env/" + env + "/" + strings.Join(subenvs, "/"), nil
+}
 
 func EnvExists(basedir string, env string) bool {
 	return DirExists(basedir + "/env/" + env)
 }
 
+func CheckEnv(basedir string, env string) error {
+	if EnvExists(basedir, env) == false {
+		return errors.New("environment doesn't exist: " + env)
+	}
 
-func SubEnvExists(basedir string, env string, subenv string) bool {
-	return DirExists(basedir + "/env/" + env + "/subenv/" + subenv)
+	return nil
 }
 
+func SubEnvExists(basedir string, env string, subenvs []string) bool {
+	path, err := SubEnvPath(basedir, env, subenvs)
+	if err != nil {
+		return false
+	}
+	return DirExists(path)
+}
 
-func LoadEnvOverride(basedir string, env string, subenv string) (map[string]string, error) {
+func CheckSubEnvs(basedir string, env string, subenvs []string) error {
+	for k := range subenvs {
+		path, err := SubEnvPath(basedir, env, subenvs[0:k+1])
+		if err != nil {
+			return err
+		}
+
+		if DirExists(path) == false {
+			return errors.New("sub-environment doesn't exist: " + env + "/" + strings.Join(subenvs[0:k+1], "/"))
+		}
+	}
+
+	return nil
+}
+
+func LoadEnvOverride(basedir string, env string, subenvs []string) (map[string]string, error) {
 	var overrides = make(map[string]string)
 
-	jsonStr, err := ioutil.ReadFile(basedir + "/env/" + env + "/subenv/" + subenv + "/override.json")
+	path, err := SubEnvPath(basedir, env, subenvs)
+	if err != nil {
+		return nil, err
+	}
+
+	jsonStr, err := ioutil.ReadFile(path + "/override.json")
 	if err != nil {
 		return nil, err
 	}
@@ -129,28 +170,41 @@ func LoadEnvOverride(basedir string, env string, subenv string) (map[string]stri
 }
 
 
-func SaveEnvOverride(basedir string, env string, subenv string, override map[string]string) error {
+func SaveEnvOverride(basedir string, env string, subenvs []string, override map[string]string) error {
 	jsonStr, err := json.MarshalIndent(override, "", "  ")
 
 	if err != nil {
 		return err
 	}
 
-	return ioutil.WriteFile(basedir + "/env/" + env + "/subenv/" + subenv + "/override.json", jsonStr, 0644)
+	path, err := SubEnvPath(basedir, env, subenvs)
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(path + "/override.json", jsonStr, 0644)
 }
 
 
-func ConfigstoreForEnv(basedir string, env string, subenv string, ignoreRole bool) (*client.ConfigstoreClient, error) {
+func ConfigstoreForEnv(basedir string, env string, subenvs []string, ignoreRole bool) (*client.ConfigstoreClient, error) {
 	dbFile := basedir + "/env/" + env + "/configstore.json"
 
 	overrideFiles := make([]string, 0)
 
-	if subenv != "" {
-		if SubEnvExists(basedir, env, subenv) == false {
-			return nil, errors.New("sub-environment doesn't exists: " + env + "/" + subenv)
+	if len(subenvs) > 0 {
+		err := CheckSubEnvs(basedir, env, subenvs)
+		if err != nil {
+			return nil, err
 		}
 
-		overrideFiles = append(overrideFiles, basedir + "/env/" + env + "/subenv/" + subenv + "/override.json")
+		for k := range subenvs {
+			path, err := SubEnvPath(basedir, env, subenvs[0:k+1])
+			if err != nil {
+				return nil, err
+			}
+
+			overrideFiles = append(overrideFiles, path + "/override.json")
+		}
 	}
 
 	cc, err := client.NewConfigstoreClient(dbFile, overrideFiles, ignoreRole)

@@ -10,13 +10,13 @@ func cmdPackageSet(c *cli.Context) error {
 	basedir := c.String("basedir")
 
 	envStr := c.Args().Get(0)
-	env, subenv, err := ParseEnv(envStr, basedir)
+	env, subenvs, err := ParseEnv(envStr, basedir, true)
 
 	if err != nil {
 		return err
 	}
 
-	if subenv == "" { // We're updating a main environment
+	if len(subenvs) == 0 { // We're updating a main environment
 		dbFile := basedir + "/env/" + env + "/configstore.json"
 
 		cc, err := client.NewConfigstoreClient(dbFile, make([]string, 0), c.Bool("ignore-role"))
@@ -31,7 +31,7 @@ func cmdPackageSet(c *cli.Context) error {
 		return SetCmdShared(cc, isSecret, key, val)
 
 	} else { // We're updating a sub-environment
-		overrides, err := LoadEnvOverride(basedir, env, subenv)
+		overrides, err := LoadEnvOverride(basedir, env, subenvs)
 		if err != nil {
 			return err
 		}
@@ -45,6 +45,6 @@ func cmdPackageSet(c *cli.Context) error {
 
 		overrides[key] = val
 
-		return SaveEnvOverride(basedir, env, subenv, overrides)
+		return SaveEnvOverride(basedir, env, subenvs, overrides)
 	}
 }

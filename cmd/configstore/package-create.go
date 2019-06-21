@@ -12,7 +12,7 @@ func cmdPackageCreate(c *cli.Context) error {
 	basedir := c.String("basedir")
 
 	envStr := c.Args().Get(0)
-	env, subenv, err := ParseEnv(envStr, "")
+	env, subenvs, err := ParseEnv(envStr, basedir, false)
 
 	if err != nil {
 		return err
@@ -20,7 +20,7 @@ func cmdPackageCreate(c *cli.Context) error {
 
 	println("Creating environment: " + envStr)
 
-	if subenv == "" { // We're creating a main environment
+	if len(subenvs) == 0 { // We're creating a main environment
 		if EnvExists(basedir, env) {
 			return errors.New("environment already exists: " + env)
 		}
@@ -46,15 +46,19 @@ func cmdPackageCreate(c *cli.Context) error {
 		}
 
 	} else { // We're creating a sub-environment
-		if EnvExists(basedir, env) == false {
-			return errors.New("main environment doesn't exists: " + env)
+		err := CheckEnv(basedir, env)
+		if err != nil {
+			return err
 		}
 
-		if SubEnvExists(basedir, env, subenv) {
+		if SubEnvExists(basedir, env, subenvs) {
 			return errors.New("sub-environment already exists: " + envStr)
 		}
 
-		dir := basedir + "/env/" + env + "/subenv/" + subenv
+		dir, err := SubEnvPath(basedir, env, subenvs)
+		if err != nil {
+			return err
+		}
 
 		if err := os.MkdirAll(dir, 0755); err != nil {
 			return err

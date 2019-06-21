@@ -11,14 +11,14 @@ func cmdPackageUnset(c *cli.Context) error {
 	ignoreRole := c.Bool("ignore-role")
 	key := c.Args().Get(1)
 
-	env, subenv, err := ParseEnv(envStr, basedir)
+	env, subenvs, err := ParseEnv(envStr, basedir, true)
 
 	if err != nil {
 		return err
 	}
 
-	if subenv == "" {
-		cc, err := ConfigstoreForEnv(basedir, env, subenv, ignoreRole)
+	if len(subenvs) == 0 {
+		cc, err := ConfigstoreForEnv(basedir, env, subenvs, ignoreRole)
 		if err != nil {
 			return err
 		}
@@ -27,13 +27,13 @@ func cmdPackageUnset(c *cli.Context) error {
 			return err
 		}
 	} else {
-		overrides, err := LoadEnvOverride(basedir, env, subenv)
+		overrides, err := LoadEnvOverride(basedir, env, subenvs)
 		if err != nil {
 			return err
 		}
 
 		delete(overrides, key)
-		if err := SaveEnvOverride(basedir, env, subenv, overrides); err != nil {
+		if err := SaveEnvOverride(basedir, env, subenvs, overrides); err != nil {
 			return err
 		}
 	}

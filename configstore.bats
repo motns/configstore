@@ -97,8 +97,13 @@
 
   run bin/darwin/amd64/configstore package create_env --basedir test_data/package_test dev/local
   [ "$status" -eq 0 ]
-  [ -d "test_data/package_test/env/dev/subenv/local" ]
-  [ -e "test_data/package_test/env/dev/subenv/local/override.json" ]
+  [ -d "test_data/package_test/env/dev/local" ]
+  [ -e "test_data/package_test/env/dev/local/override.json" ]
+
+  run bin/darwin/amd64/configstore package create_env --basedir test_data/package_test dev/local/foo
+  [ "$status" -eq 0 ]
+  [ -d "test_data/package_test/env/dev/local/foo" ]
+  [ -e "test_data/package_test/env/dev/local/foo/override.json" ]
 
   run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev username root
   [ "$status" -eq 0 ]
@@ -110,12 +115,23 @@
   run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev password supersecret
   [ "$status" -eq 0 ]
 
+  run bin/darwin/amd64/configstore package get --basedir test_data/package_test dev password
+  [ "$status" -eq 0 ]
+  [ "$output" = "supersecret" ]
+
   run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev/local username admin
   [ "$status" -eq 0 ]
 
   run bin/darwin/amd64/configstore package get --basedir test_data/package_test dev/local username
   [ "$status" -eq 0 ]
   [ "$output" = "admin" ]
+
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev/local/foo username kevin
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore package get --basedir test_data/package_test dev/local/foo username
+  [ "$status" -eq 0 ]
+  [ "$output" = "kevin" ]
 
   run bin/darwin/amd64/configstore package process_templates --basedir test_data/package_test dev test_data/out_test
   [ "$status" -eq 0 ]
