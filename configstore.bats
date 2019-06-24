@@ -139,6 +139,18 @@
   run bin/darwin/amd64/configstore package process_templates --basedir test_data/package_test dev/local test_data/out_test
   [ "$status" -eq 0 ]
 
+  run bin/darwin/amd64/configstore package ls --basedir test_data/package_test
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore package ls --basedir test_data/package_test dev
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore package ls --basedir test_data/package_test dev/local
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore package tree --basedir test_data/package_test
+  [ "$status" -eq 0 ]
+
   run bin/darwin/amd64/configstore package unset --basedir test_data/package_test dev/local username
   [ "$status" -eq 0 ]
 
