@@ -31,7 +31,12 @@ func cmdPackageSet(c *cli.Context) error {
 		return SetCmdShared(cc, isSecret, key, val)
 
 	} else { // We're updating a sub-environment
-		overrides, err := LoadEnvOverride(basedir, env, subenvs)
+		path, err := SubEnvPath(basedir, env, subenvs)
+		if err != nil {
+			return err
+		}
+
+		overrides, err := LoadEnvOverride(path)
 		if err != nil {
 			return err
 		}
@@ -45,6 +50,6 @@ func cmdPackageSet(c *cli.Context) error {
 
 		overrides[key] = val
 
-		return SaveEnvOverride(basedir, env, subenvs, overrides)
+		return SaveEnvOverride(path, overrides)
 	}
 }

@@ -113,7 +113,12 @@ func cmdPackageLs(c *cli.Context) error {
 		allValues["(default)"] = make(map[string]string)
 
 		for _, se := range subenvs {
-			data, err := LoadEnvOverride(basedir, env, []string{se})
+			path, err := SubEnvPath(basedir, env, []string{se})
+			if err != nil {
+				return err
+			}
+
+			data, err := LoadEnvOverride(path)
 
 			if err != nil {
 				return err

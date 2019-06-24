@@ -86,24 +86,6 @@ func ParseEnv(s string, basedir string, validate bool) (string, []string, error)
 		env = s
 	}
 
-	//if validate == true {
-	//	if basedir == "" {
-	//		return "", nil, errors.New("basedir cannot be empty")
-	//	}
-	//
-	//	err := CheckEnv(basedir, env)
-	//	if err != nil {
-	//		return "", nil, err
-	//	}
-	//
-	//	if len(subenvs) > 0 {
-	//		err := CheckSubEnvs(basedir, env, subenvs)
-	//		if err != nil {
-	//			return "", nil, err
-	//		}
-	//	}
-	//}
-
 	return env, subenvs, nil
 }
 
@@ -149,15 +131,10 @@ func CheckSubEnvs(basedir string, env string, subenvs []string) error {
 	return nil
 }
 
-func LoadEnvOverride(basedir string, env string, subenvs []string) (map[string]string, error) {
+func LoadEnvOverride(basedir string) (map[string]string, error) {
 	var overrides = make(map[string]string)
 
-	path, err := SubEnvPath(basedir, env, subenvs)
-	if err != nil {
-		return nil, err
-	}
-
-	jsonStr, err := ioutil.ReadFile(path + "/override.json")
+	jsonStr, err := ioutil.ReadFile(basedir + "/override.json")
 	if err != nil {
 		return nil, err
 	}
@@ -170,19 +147,14 @@ func LoadEnvOverride(basedir string, env string, subenvs []string) (map[string]s
 }
 
 
-func SaveEnvOverride(basedir string, env string, subenvs []string, override map[string]string) error {
+func SaveEnvOverride(basedir string, override map[string]string) error {
 	jsonStr, err := json.MarshalIndent(override, "", "  ")
 
 	if err != nil {
 		return err
 	}
 
-	path, err := SubEnvPath(basedir, env, subenvs)
-	if err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(path + "/override.json", jsonStr, 0644)
+	return ioutil.WriteFile(basedir + "/override.json", jsonStr, 0644)
 }
 
 

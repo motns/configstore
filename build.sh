@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-for OS in darwin linux openbsd windows
+#for OS in darwin linux openbsd windows
+for OS in darwin
 do
     echo "=== Building amd64/$OS binary..."
     mkdir -p bin/${OS}/amd64

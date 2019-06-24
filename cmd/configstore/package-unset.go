@@ -27,13 +27,18 @@ func cmdPackageUnset(c *cli.Context) error {
 			return err
 		}
 	} else {
-		overrides, err := LoadEnvOverride(basedir, env, subenvs)
+		path, err := SubEnvPath(basedir, env, subenvs)
+		if err != nil {
+			return err
+		}
+
+		overrides, err := LoadEnvOverride(path)
 		if err != nil {
 			return err
 		}
 
 		delete(overrides, key)
-		if err := SaveEnvOverride(basedir, env, subenvs, overrides); err != nil {
+		if err := SaveEnvOverride(path, overrides); err != nil {
 			return err
 		}
 	}
