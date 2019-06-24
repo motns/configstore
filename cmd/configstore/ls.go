@@ -1,10 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"github.com/motns/configstore/client"
 	"gopkg.in/urfave/cli.v1"
 	"sort"
-	"github.com/motns/configstore/client"
 )
 
 func cmdLs(c *cli.Context) error {
@@ -18,16 +17,11 @@ func cmdLs(c *cli.Context) error {
 		return err
 	}
 
-	entries := make([]string, 0, len(valueMap))
+	allKeys := cc.GetAllKeys()
+	sort.Strings(allKeys)
 
-	for k, v := range valueMap {
-		entries = append(entries, k+": "+v)
-	}
-
-	sort.Strings(entries)
-
-	for _, v := range entries {
-		fmt.Println(v)
+	for _, k := range allKeys {
+		println(k + ": " + valueMap[k])
 	}
 
 	return nil
