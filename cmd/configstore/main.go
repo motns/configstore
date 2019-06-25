@@ -298,7 +298,7 @@ func main() {
 				},
 				{
 					Name:      "ls",
-					Usage:     "List all keys and their respective values from each environment or sub-environment in table format",
+					Usage:     "List key/value pairs from the given environment or sub-environment, or simply return a list of environments if no argument was given",
 					ArgsUsage: "[env]",
 					Action:    cmdPackageLs,
 					Flags: []cli.Flag{
@@ -316,7 +316,6 @@ func main() {
 				{
 					Name:      "tree",
 					Usage:     "Print out a hierarchical structure of all keys and values for environments and sub-environments",
-					ArgsUsage: "[env]",
 					Action:    cmdPackageTree,
 					Flags: []cli.Flag{
 						cli.StringFlag{

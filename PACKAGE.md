@@ -23,10 +23,13 @@ The directory structure looks something like this:
   /env
     /dev
       configstore.json
-      /subenv
-        /local
+      /local
+        override.json
+      /aws
+        override.json
+        /server1
           override.json
-        /aws
+        /server2
           override.json
     /staging
       configstore.json
@@ -59,7 +62,7 @@ Creating a sub-environment looks very similar:
 ```bash
 configstore package create_env dev/local
 ```
-This will create an empty override file under `package/env/dev/subenv/local`.
+This will create an empty override file under `package/env/dev/local`.
 Note how you refer to sub-environments in a path like syntax (`env/subenv`); this is the same in all `configstore package` commands.
 
 To set a new key in an environment:
@@ -73,43 +76,83 @@ configstore package set dev/local username kevin
 ```
 Note that trying to set keys in an uninitialised environment or sub-environment will result in an error.
 
-There's also a fancier version of `ls` available, which renders environments in a table format:
+Package supports `ls` like a regular Configstore, but it behaves differently based on what arguments are passed to it.
+Without arguments
 ```bash
 configstore package ls
 ```
-This will gather keys/values from all environments (but not sub-environments), and render them in a table that looks something like this:
+simply lists the environments available in the package:
 ```bash
-+-----------+---------------------------+-----------------------------+-------------------------------+
-| KEY / ENV |            DEV            |            LIVE             |            STAGING            |
-+-----------+---------------------------+-----------------------------+-------------------------------+
-| password  | password123               | supersecret                 | bases7-prank                  |
-| url       | http://dev.myserver.org   | http://www.myserver.co.uk   | http://staging.myserver.org   |
-| username  | admin                     | admin                       | admin                         |
-+-----------+---------------------------+-----------------------------+-------------------------------+
+=== Environments:
+dev
+live
+staging
 ```
-It highlights entries which are missing from one or more environment, and also rows where the values are different between
-environments.
 
-You can run the same command for a sub-environment by passing the environment name as the first argument:
+When a top-level environment is passed to it:
 ```bash
 configstore package ls dev
 ```
-This will load the environment, along with all sub-environments, and output a table similar to the above:
+it returns a list of sub-environments (if available), followed by the list of key/value pairs from the given Configstore DB:
 ```bash
-+--------------+---------------------------+-------------+-----------+
-| KEY / SUBENV |         (DEFAULT)         |     AWS     |   LOCAL   |
-+--------------+---------------------------+-------------+-----------+
-| password     | password123               | supersecret | (missing) |
-| url          | http://dev.myserver.org   | (missing)   | (missing) |
-| username     | admin                     | (missing)   | kevin     |
-+--------------+---------------------------+-------------+-----------+
+=== Sub-environments:
+aws
+local
+
+=== Configstore Values:
+password: password123
+url: http://dev.cultbeauty.org
+username: admin
+``` 
+
+When a sub-environment is passed to it:
+```bash
+configstore package ls dev/aws
+```
+it returns a list of further sub-environments (if available), followed by the list of override key/value pairs:
+```bash
+=== Sub-environments:
+server1
+server2
+
+=== Override Values:
+password: supersecret
+``` 
+
+There's also a command which allows you to see every key, across all Configstore DBs, with a hierarchy of values from all
+environments and sub-environments under each:
+```bash
+configstore package tree
+```
+This returns something like:
+```bash
+password
+  /dev: password123
+    /aws: supersecret
+    /local
+  /live: supersecret
+  /staging: bases7-prank
+url
+  /dev: http://dev.example.org
+    /aws
+      /server1: http://dev.myserver1.org
+      /server2
+    /local
+  /live: https://www.example.co.uk
+  /staging: https://staging.example.org
+username
+  /dev: admin
+    /aws
+    /local: kevin
+  /live: admin
+  /staging: admin
 ```
 
 To process templates in the context of a given environment, you can run:
 ```bash
 configstore package process_templates dev/local /path/to/output
 ```
-This will load the Configstore DB from `package/env/dev` with the override file from `package/env/dev/subenv/local`, and then process each
+This will load the Configstore DB from `package/env/dev` with the override file from `package/env/dev/local`, and then process each
 template file under `package/template`, outputting the result (with the same filenames) under `/path/to/output`.
 
 To "test" a Configstore Package, you can run:
