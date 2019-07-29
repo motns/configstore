@@ -49,6 +49,31 @@ func cmdPackageTest(c *cli.Context) error {
 		}
 	}
 
+	// Test sub-environment overrides
+	for _, env := range envs {
+		fmt.Printf("Checking sub-environments for env: %s\n", env)
+
+		envBasePath := basedir + "/env/" + env
+		cc, err := client.NewConfigstoreClient(envBasePath + "/configstore.json", make([]string, 0), true)
+		if err != nil {
+			return err
+		}
+
+		baseKeys := cc.GetAllKeys()
+
+		subdirs, err := ListDirs(envBasePath)
+		if err != nil {
+			return err
+		}
+
+		for _, d := range subdirs {
+			err := checkOverride(basedir, env + "/" + d, baseKeys)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	templateFiles, err := ListFiles(basedir + "/template")
 
 	if err != nil {
@@ -72,5 +97,35 @@ func cmdPackageTest(c *cli.Context) error {
 	}
 
 	println("All tests passed!")
+	return nil
+}
+
+func checkOverride(basedir string, env string, baseKeys []string) error {
+	fmt.Printf("Checking sub-environment: %s\n", env)
+	envPath := basedir + "/env/" + env
+
+	override, err := LoadEnvOverride(envPath)
+	if err != nil {
+		return err
+	}
+
+	for k := range override {
+		if !SliceContains(baseKeys, k) {
+			return fmt.Errorf("key \"%s\" from override \"%s\" not in base Configstore DB", k, env)
+		}
+	}
+
+	subdirs, err := ListDirs(envPath)
+	if err != nil {
+		return err
+	}
+
+	for _, d := range subdirs {
+		err := checkOverride(basedir, env + "/" + d, baseKeys)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
