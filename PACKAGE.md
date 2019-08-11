@@ -166,6 +166,16 @@ This will check that:
 This command is implemented in a way that is doesn't need to decrypt the actual values from each Configstore, which means
 that you can run it on a CI server as part of your build.
 
+To copy values between two environments you can run:
+```bash
+configstore package copy live staging
+```
+By default this copies the values for all keys from `live` to `staging`, overwriting any values that already exist.
+You can pass a pattern as the third argument to restrict which keys get copied:
+```bash
+configstore package copy live staging db
+```
+
 
 ### Integrating with your application (using Docker)
 

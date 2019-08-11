@@ -183,7 +183,7 @@ func (c *ConfigstoreClient) GetAll() (map[string]ConfigstoreDBValue, error) {
 			}
 
 			entries[k] = ConfigstoreDBValue{
-				Value: decoded,
+				Value:    decoded,
 				IsSecret: v.IsSecret,
 				IsBinary: v.IsBinary,
 			}
@@ -191,7 +191,7 @@ func (c *ConfigstoreClient) GetAll() (map[string]ConfigstoreDBValue, error) {
 			o, exists := c.overrides[k]
 			if exists {
 				entries[k] = ConfigstoreDBValue{
-					Value: o,
+					Value:    o,
 					IsSecret: v.IsSecret,
 					IsBinary: v.IsBinary,
 				}

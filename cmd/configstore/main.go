@@ -281,6 +281,19 @@ func main() {
 					},
 				},
 				{
+					Name:      "copy",
+					Usage:     "Copy keys between two top-level environments",
+					ArgsUsage: "source_env destination_env [key_pattern]",
+					Action:    cmdPackageCopy,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "basedir",
+							Usage: "The base directory for the configuration package structure",
+							Value: "./config",
+						},
+					},
+				},
+				{
 					Name:      "set",
 					Usage:     "Set a new value, or update an existing one in the Configstore of a given environment",
 					ArgsUsage: "env[/subenv] key value",
