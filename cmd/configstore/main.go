@@ -60,6 +60,10 @@ func main() {
 					Usage: "Whether this value is sensitive (to be encrypted)",
 				},
 				cli.BoolFlag{
+					Name:  "binary",
+					Usage: "Indicate whether this value contains binary data (instead of plain text)",
+				},
+				cli.BoolFlag{
 					Name:  "ignore-role",
 					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 				},
@@ -79,6 +83,40 @@ func main() {
 				cli.StringSliceFlag{
 					Name:  "override",
 					Usage: "JSON file with key-value pairs for overriding non-secret values in Configstore DB",
+				},
+				cli.BoolFlag{
+					Name:  "ignore-role",
+					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
+				},
+			},
+		},
+		{
+			Name:      "encrypt",
+			Usage:     "Take an existing value from the DB and change it to be a secret (encrypted) value",
+			ArgsUsage: "key",
+			Action:    cmdEncrypt,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "db",
+					Usage: "The Configstore JSON file",
+					Value: "./configstore.json",
+				},
+				cli.BoolFlag{
+					Name:  "ignore-role",
+					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
+				},
+			},
+		},
+		{
+			Name:      "decrypt",
+			Usage:     "Take an existing value from the given environment and change it to be a plain (unencrypted) value",
+			ArgsUsage: "key",
+			Action:    cmdDecrypt,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "db",
+					Usage: "The Configstore JSON file",
+					Value: "./configstore.json",
 				},
 				cli.BoolFlag{
 					Name:  "ignore-role",
@@ -258,6 +296,10 @@ func main() {
 							Usage: "Whether this value is sensitive (to be encrypted)",
 						},
 						cli.BoolFlag{
+							Name:  "binary",
+							Usage: "Indicate whether this value contains binary data (instead of plain text)",
+						},
+						cli.BoolFlag{
 							Name:  "ignore-role",
 							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 						},
@@ -285,6 +327,40 @@ func main() {
 					Usage:     "Remove a value from the Configstore for a given environment",
 					ArgsUsage: "env[/subenv] key",
 					Action:    cmdPackageUnset,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "basedir",
+							Usage: "The base directory for the configuration package structure",
+							Value: "./config",
+						},
+						cli.BoolFlag{
+							Name:  "ignore-role",
+							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
+						},
+					},
+				},
+				{
+					Name:      "encrypt",
+					Usage:     "Take an existing value from the given environment and change it to be a secret (encrypted) value",
+					ArgsUsage: "env key",
+					Action:    cmdPackageEncrypt,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "basedir",
+							Usage: "The base directory for the configuration package structure",
+							Value: "./config",
+						},
+						cli.BoolFlag{
+							Name:  "ignore-role",
+							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
+						},
+					},
+				},
+				{
+					Name:      "decrypt",
+					Usage:     "Take an existing value from the given environment and change it to be a plain (unencrypted) value",
+					ArgsUsage: "env key",
+					Action:    cmdPackageDecrypt,
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:  "basedir",

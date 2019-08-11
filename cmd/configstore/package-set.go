@@ -25,10 +25,11 @@ func cmdPackageSet(c *cli.Context) error {
 		}
 
 		isSecret := c.Bool("secret")
+		isBinary := c.Bool("binary")
 		key := c.Args().Get(1)
 		val := c.Args().Get(2)
 
-		return SetCmdShared(cc, isSecret, key, val)
+		return SetCmdShared(cc, isSecret, isBinary, key, val)
 
 	} else { // We're updating a sub-environment
 		path, err := SubEnvPath(basedir, env, subenvs)

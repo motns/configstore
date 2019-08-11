@@ -185,7 +185,7 @@ func ConfigstoreForEnv(basedir string, env string, subenvs []string, ignoreRole 
 	return cc, nil
 }
 
-func SetCmdShared(cc *client.ConfigstoreClient, isSecret bool, key string, val string) error {
+func SetCmdShared(cc *client.ConfigstoreClient, isSecret bool, isBinary bool, key string, val string) error {
 
 	// Work out whether data is being piped in from StdIn
 	var havePipe bool
@@ -229,7 +229,7 @@ func SetCmdShared(cc *client.ConfigstoreClient, isSecret bool, key string, val s
 		}
 	}
 
-	err = cc.Set(key, rawValue, isSecret)
+	err = cc.Set(key, rawValue, isSecret, isBinary)
 	if err != nil {
 		return err
 	}

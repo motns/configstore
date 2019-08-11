@@ -241,7 +241,7 @@ func TestClientFull(t *testing.T) {
 		t.Errorf("failed to initialise configstore client: %s", err)
 	}
 
-	err = c.Set("realname", []byte("Peter Parker"), true)
+	err = c.Set("realname", []byte("Peter Parker"), true, false)
 
 	if err != nil {
 		t.Errorf("failed to set new key: %s", err)

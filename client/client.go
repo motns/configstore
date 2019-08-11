@@ -229,7 +229,7 @@ func (c *ConfigstoreClient) GetAllKeys() []string {
 	return keys
 }
 
-func (c *ConfigstoreClient) Set(key string, rawValue []byte, isSecret bool) error {
+func (c *ConfigstoreClient) Set(key string, rawValue []byte, isSecret bool, isBinary bool) error {
 	if key == "" {
 		return errors.New("you have to specify a non-empty Key to set")
 	}
@@ -255,9 +255,88 @@ func (c *ConfigstoreClient) Set(key string, rawValue []byte, isSecret bool) erro
 	c.db.Data[key] = ConfigstoreDBValue{
 		Value:    value,
 		IsSecret: isSecret,
+		IsBinary: isBinary,
 	}
 
 	err := saveDB(c.dbFile, c.db)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *ConfigstoreClient) Encrypt(key string) error {
+	if key == "" {
+		return errors.New("you have to specify a non-empty Key to encrypt")
+	}
+
+	entry, exists := c.db.Data[key]
+	if !exists {
+		return errors.New("key does not exist in Configstore: " + key)
+	}
+
+	// Already encrypted - leave alone
+	if entry.IsSecret {
+		return nil
+	}
+
+	err := c.initEncryption()
+	if err != nil {
+		return err
+	}
+
+	encrypted, err := c.encryption.encrypt([]byte(entry.Value))
+	if err != nil {
+		return err
+	}
+
+	c.db.Data[key] = ConfigstoreDBValue{
+		Value:    string(encrypted),
+		IsSecret: true,
+		IsBinary: entry.IsBinary,
+	}
+
+	err = saveDB(c.dbFile, c.db)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *ConfigstoreClient) Decrypt(key string) error {
+	if key == "" {
+		return errors.New("you have to specify a non-empty Key to decrypt")
+	}
+
+	entry, exists := c.db.Data[key]
+	if !exists {
+		return errors.New("key does not exist in Configstore: " + key)
+	}
+
+	// Already plain text - leave alone
+	if !entry.IsSecret {
+		return nil
+	}
+
+	err := c.initEncryption()
+	if err != nil {
+		return err
+	}
+
+	decrypted, err := c.encryption.decrypt(entry.Value)
+	if err != nil {
+		return err
+	}
+
+	c.db.Data[key] = ConfigstoreDBValue{
+		Value:    decrypted,
+		IsSecret: false,
+		IsBinary: entry.IsBinary,
+	}
+
+	err = saveDB(c.dbFile, c.db)
 	if err != nil {
 		return err
 	}

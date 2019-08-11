@@ -69,6 +69,29 @@
   rm -f test_data/configstore.json
 }
 
+@test "configstore encrypt and decrypt" {
+  rm -f test_data/configstore.json
+  bin/darwin/amd64/configstore init --dir test_data --insecure
+  run bin/darwin/amd64/configstore set --db test_data/configstore.json mykey myvalue
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore encrypt --db test_data/configstore.json mykey
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore get --db test_data/configstore.json mykey
+  [ "$status" -eq 0 ]
+  [ "$output" = "myvalue" ]
+
+  run bin/darwin/amd64/configstore decrypt --db test_data/configstore.json mykey
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore get --db test_data/configstore.json mykey
+  [ "$status" -eq 0 ]
+  [ "$output" = "myvalue" ]
+
+  rm -f test_data/configstore.json
+}
+
 @test "configstore test_template" {
   run bin/darwin/amd64/configstore test_template --db test_data/example_configstore.json test_data/valid_template.txt
   [ "$status" -eq 0 ]
