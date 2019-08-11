@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 )
 
-
 func cmdPackageTest(c *cli.Context) error {
 	basedir := c.String("basedir")
 
@@ -54,7 +53,7 @@ func cmdPackageTest(c *cli.Context) error {
 		fmt.Printf("Checking sub-environments for env: %s\n", env)
 
 		envBasePath := basedir + "/env/" + env
-		cc, err := client.NewConfigstoreClient(envBasePath + "/configstore.json", make([]string, 0), true)
+		cc, err := client.NewConfigstoreClient(envBasePath+"/configstore.json", make([]string, 0), true)
 		if err != nil {
 			return err
 		}
@@ -67,7 +66,7 @@ func cmdPackageTest(c *cli.Context) error {
 		}
 
 		for _, d := range subdirs {
-			err := checkOverride(basedir, env + "/" + d, baseKeys)
+			err := checkOverride(basedir, env+"/"+d, baseKeys)
 			if err != nil {
 				return err
 			}
@@ -121,7 +120,7 @@ func checkOverride(basedir string, env string, baseKeys []string) error {
 	}
 
 	for _, d := range subdirs {
-		err := checkOverride(basedir, env + "/" + d, baseKeys)
+		err := checkOverride(basedir, env+"/"+d, baseKeys)
 		if err != nil {
 			return err
 		}

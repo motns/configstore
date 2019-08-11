@@ -10,9 +10,9 @@ import (
 )
 
 type Encryption struct {
-	dataKey []byte
+	dataKey     []byte
 	masterKeyId string
-	kms *KMS
+	kms         *KMS
 }
 
 // Used to create an Encryption object for encrypting/decrypting secrets. Will initialise
@@ -56,9 +56,9 @@ func createEncryption(db *ConfigstoreDB, kms *KMS, ignoreRole bool) (*Encryption
 	}
 
 	return &Encryption{
-		dataKey: dataKey,
+		dataKey:     dataKey,
 		masterKeyId: masterKey,
-		kms: kms,
+		kms:         kms,
 	}, nil
 }
 

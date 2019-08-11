@@ -1,10 +1,9 @@
 package main
 
 import (
-	"gopkg.in/urfave/cli.v1"
 	"github.com/motns/configstore/client"
+	"gopkg.in/urfave/cli.v1"
 )
-
 
 func cmdSet(c *cli.Context) error {
 	cc, err := client.NewConfigstoreClient(c.String("db"), make([]string, 0), c.Bool("ignore-role"))

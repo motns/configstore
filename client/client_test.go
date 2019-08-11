@@ -146,7 +146,7 @@ func TestGetWithOverride(t *testing.T) {
 }
 
 func TestGetWithMultipleOverrides(t *testing.T) {
-	c, err := NewConfigstoreClient("../test_data/example_configstore.json", []string{"../test_data/override.json","../test_data/override2.json"}, true)
+	c, err := NewConfigstoreClient("../test_data/example_configstore.json", []string{"../test_data/override.json", "../test_data/override2.json"}, true)
 
 	if err != nil {
 		t.Errorf("failed to initialise configstore client: %s", err)

@@ -7,7 +7,6 @@ import (
 	"os"
 )
 
-
 func cmdPackageCreate(c *cli.Context) error {
 	basedir := c.String("basedir")
 
@@ -64,7 +63,7 @@ func cmdPackageCreate(c *cli.Context) error {
 			return err
 		}
 
-		f, err := os.OpenFile(dir + "/override.json", os.O_CREATE|os.O_RDWR, 0666)
+		f, err := os.OpenFile(dir+"/override.json", os.O_CREATE|os.O_RDWR, 0666)
 
 		if err != nil {
 			return err

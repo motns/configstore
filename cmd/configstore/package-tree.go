@@ -11,7 +11,7 @@ import (
 type Tree = map[string]TreeNode
 
 type TreeNode struct {
-	value string
+	value    string
 	children Tree
 }
 
@@ -40,7 +40,6 @@ func cmdPackageTree(c *cli.Context) error {
 	return nil
 }
 
-
 func buildTree(basedir string, configstores map[string]*client.ConfigstoreClient, allKeys []string) (Tree, error) {
 	configTree := make(Tree)
 	cache := createCache()
@@ -56,7 +55,7 @@ func buildTree(basedir string, configstores map[string]*client.ConfigstoreClient
 
 			if _, exists := configTree[k]; !exists {
 				configTree[k] = TreeNode{
-					value: "",
+					value:    "",
 					children: make(map[string]TreeNode),
 				}
 			}
@@ -68,7 +67,7 @@ func buildTree(basedir string, configstores map[string]*client.ConfigstoreClient
 				val = formatRed("(missing)")
 			}
 
-			subtree, hasOverride, err := buildSubTree(k, basedir + "/env/" + env, cache)
+			subtree, hasOverride, err := buildSubTree(k, basedir+"/env/"+env, cache)
 			if err != nil {
 				return nil, err
 			}
@@ -79,7 +78,7 @@ func buildTree(basedir string, configstores map[string]*client.ConfigstoreClient
 			}
 
 			configTree[k].children[env] = TreeNode{
-				value: val,
+				value:    val,
 				children: subtree,
 			}
 		}
@@ -87,7 +86,6 @@ func buildTree(basedir string, configstores map[string]*client.ConfigstoreClient
 
 	return configTree, nil
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,7 +155,7 @@ func buildSubTree(key string, basedir string, cache SubenvCache) (Tree, bool, er
 			treeHasOverride = true
 		}
 
-		subtree, o, err := buildSubTree(key, basedir + "/" + subenv, cache)
+		subtree, o, err := buildSubTree(key, basedir+"/"+subenv, cache)
 		subtreeHasOverride = subtreeHasOverride || o
 		if err != nil {
 			return nil, false, err
@@ -169,14 +167,13 @@ func buildSubTree(key string, basedir string, cache SubenvCache) (Tree, bool, er
 		}
 
 		tree[subenv] = TreeNode{
-			value: val,
+			value:    val,
 			children: subtree,
 		}
 	}
 
 	return tree, treeHasOverride || subtreeHasOverride, nil
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,7 +204,6 @@ func (c SubenvCache) get(basedir string) (map[string]string, error) {
 
 	return data, nil
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -241,6 +237,6 @@ func printTreeNode(key string, node TreeNode, indent int, isRoot bool) {
 	println(out)
 
 	if len(node.children) != 0 {
-		printTree(node.children, indent + 2, false)
+		printTree(node.children, indent+2, false)
 	}
 }

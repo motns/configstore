@@ -70,7 +70,7 @@ func ListFiles(basedir string) ([]string, error) {
 	return files, nil
 }
 
-func ParseEnv(s string, basedir string, validate bool) (string, []string, error)  {
+func ParseEnv(s string, basedir string, validate bool) (string, []string, error) {
 	if s == "" {
 		return "", nil, errors.New("environment name cannot be empty")
 	}
@@ -146,7 +146,6 @@ func LoadEnvOverride(basedir string) (map[string]string, error) {
 	return overrides, nil
 }
 
-
 func SaveEnvOverride(basedir string, override map[string]string) error {
 	jsonStr, err := json.MarshalIndent(override, "", "  ")
 
@@ -154,9 +153,8 @@ func SaveEnvOverride(basedir string, override map[string]string) error {
 		return err
 	}
 
-	return ioutil.WriteFile(basedir + "/override.json", jsonStr, 0644)
+	return ioutil.WriteFile(basedir+"/override.json", jsonStr, 0644)
 }
-
 
 func ConfigstoreForEnv(basedir string, env string, subenvs []string, ignoreRole bool) (*client.ConfigstoreClient, error) {
 	dbFile := basedir + "/env/" + env + "/configstore.json"
@@ -175,7 +173,7 @@ func ConfigstoreForEnv(basedir string, env string, subenvs []string, ignoreRole 
 				return nil, err
 			}
 
-			overrideFiles = append(overrideFiles, path + "/override.json")
+			overrideFiles = append(overrideFiles, path+"/override.json")
 		}
 	}
 
@@ -186,7 +184,6 @@ func ConfigstoreForEnv(basedir string, env string, subenvs []string, ignoreRole 
 
 	return cc, nil
 }
-
 
 func SetCmdShared(cc *client.ConfigstoreClient, isSecret bool, key string, val string) error {
 
@@ -200,7 +197,7 @@ func SetCmdShared(cc *client.ConfigstoreClient, isSecret bool, key string, val s
 		return err
 	}
 
-	if ss.Mode() & os.ModeNamedPipe != 0 {
+	if ss.Mode()&os.ModeNamedPipe != 0 {
 		havePipe = true
 	} else {
 		havePipe = false
@@ -239,7 +236,6 @@ func SetCmdShared(cc *client.ConfigstoreClient, isSecret bool, key string, val s
 
 	return nil
 }
-
 
 func RenderTable(allKeys []string, allValues map[string]map[string]string, envs []string, isSubEnv bool) {
 	var headers []string
@@ -286,7 +282,6 @@ func RenderTable(allKeys []string, allValues map[string]map[string]string, envs 
 
 	table.Render()
 }
-
 
 func CompareKeys(cc1 *client.ConfigstoreClient, cc2 *client.ConfigstoreClient) ([]string, error) {
 	out := make([]string, 0)

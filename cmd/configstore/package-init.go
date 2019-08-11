@@ -15,19 +15,19 @@ func cmdPackageInit(c *cli.Context) error {
 
 	println("Initialising environment structure in basedir: " + basedir)
 
-	if err := os.MkdirAll(basedir + "/env", 0755); err != nil {
+	if err := os.MkdirAll(basedir+"/env", 0755); err != nil {
 		return err
 	}
 
-	if err := os.MkdirAll(basedir + "/template", 0755); err != nil {
+	if err := os.MkdirAll(basedir+"/template", 0755); err != nil {
 		return err
 	}
 
-	if err := ioutil.WriteFile(basedir + "/env/.gitkeep", []byte(""), 0644); err != nil {
+	if err := ioutil.WriteFile(basedir+"/env/.gitkeep", []byte(""), 0644); err != nil {
 		return err
 	}
 
-	if err := ioutil.WriteFile(basedir + "/template/.gitkeep", []byte(""), 0644); err != nil {
+	if err := ioutil.WriteFile(basedir+"/template/.gitkeep", []byte(""), 0644); err != nil {
 		return err
 	}
 

@@ -2,9 +2,9 @@ package main
 
 import (
 	"errors"
+	"github.com/motns/configstore/client"
 	"gopkg.in/urfave/cli.v1"
 	"os"
-	"github.com/motns/configstore/client"
 )
 
 func cmdInit(c *cli.Context) error {

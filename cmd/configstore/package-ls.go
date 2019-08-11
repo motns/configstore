@@ -5,7 +5,6 @@ import (
 	"sort"
 )
 
-
 func cmdPackageLs(c *cli.Context) error {
 	basedir := c.String("basedir")
 	envStr := c.Args().Get(0)

@@ -6,7 +6,6 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-
 func cmdCompareKeys(c *cli.Context) error {
 	dbFile1 := c.Args().Get(0)
 	if dbFile1 == "" {

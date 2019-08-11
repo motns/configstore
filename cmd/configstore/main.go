@@ -202,7 +202,7 @@ func main() {
 			},
 		},
 		{
-			Name: "package",
+			Name:  "package",
 			Usage: "Manage a Configstore package structure containing environments and templates",
 			Subcommands: []cli.Command{
 				{
@@ -314,9 +314,9 @@ func main() {
 					},
 				},
 				{
-					Name:      "tree",
-					Usage:     "Print out a hierarchical structure of all keys and values for environments and sub-environments",
-					Action:    cmdPackageTree,
+					Name:   "tree",
+					Usage:  "Print out a hierarchical structure of all keys and values for environments and sub-environments",
+					Action: cmdPackageTree,
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:  "basedir",
@@ -347,9 +347,9 @@ func main() {
 					},
 				},
 				{
-					Name:      "test",
-					Usage:     "Run checks on the Configstore DBs and templates in this package",
-					Action:    cmdPackageTest,
+					Name:   "test",
+					Usage:  "Run checks on the Configstore DBs and templates in this package",
+					Action: cmdPackageTest,
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:  "basedir",

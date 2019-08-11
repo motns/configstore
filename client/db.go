@@ -6,19 +6,18 @@ import (
 	"io/ioutil"
 )
 
-
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // Types
 
 type ConfigstoreDB struct {
-	Version        int                           `json:"version"`
-	Region         string                        `json:"region"`
-	Role           string                        `json:"role"`
-	IsInsecure     bool                          `json:"is_insecure"`
-	DataKey        string                        `json:"data_key"`
-	MasterKeyId    string                        `json:"master_key_id,omitempty"`
-	Data           map[string]ConfigstoreDBValue `json:"data"`
+	Version     int                           `json:"version"`
+	Region      string                        `json:"region"`
+	Role        string                        `json:"role"`
+	IsInsecure  bool                          `json:"is_insecure"`
+	DataKey     string                        `json:"data_key"`
+	MasterKeyId string                        `json:"master_key_id,omitempty"`
+	Data        map[string]ConfigstoreDBValue `json:"data"`
 }
 
 type ConfigstoreDBValue struct {
@@ -41,7 +40,6 @@ func (c ConfigstoreDB) validate() (ConfigstoreDB, error) {
 
 	return c, nil
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

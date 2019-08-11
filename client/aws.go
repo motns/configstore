@@ -4,9 +4,9 @@ import (
 	"encoding/base64"
 	"errors"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
-	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 )
 
 type AWS struct {
@@ -82,7 +82,7 @@ func (k KMS) decrypt(text []byte) ([]byte, string, error) {
 
 func (k KMS) encrypt(keyId string, text []byte) (string, error) {
 	in := &kms.EncryptInput{
-		KeyId: &keyId,
+		KeyId:     &keyId,
 		Plaintext: text,
 	}
 

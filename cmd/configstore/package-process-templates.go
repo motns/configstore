@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 )
 
-
 func cmdPackageProcessTemplates(c *cli.Context) error {
 	basedir := c.String("basedir")
 	ignoreRole := c.Bool("ignore-role")
@@ -48,7 +47,7 @@ func cmdPackageProcessTemplates(c *cli.Context) error {
 			return err
 		}
 
-		err = ioutil.WriteFile(outDir + "/" + f, []byte(processed), 0644)
+		err = ioutil.WriteFile(outDir+"/"+f, []byte(processed), 0644)
 		if err != nil {
 			return err
 		}

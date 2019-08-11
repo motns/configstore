@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"gopkg.in/urfave/cli.v1"
 	"github.com/motns/configstore/client"
+	"gopkg.in/urfave/cli.v1"
 )
 
 func cmdGet(c *cli.Context) error {

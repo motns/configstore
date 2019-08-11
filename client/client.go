@@ -11,13 +11,12 @@ import (
 )
 
 type ConfigstoreClient struct {
-	dbFile      string
-	db          ConfigstoreDB
-	encryption  *Encryption
-	ignoreRole  bool
-	overrides   map[string]string
+	dbFile     string
+	db         ConfigstoreDB
+	encryption *Encryption
+	ignoreRole bool
+	overrides  map[string]string
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +92,6 @@ func (c *ConfigstoreClient) ensureLatestVersion() error {
 		return saveDB(c.dbFile, c.db)
 	}
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -214,7 +212,7 @@ func (c *ConfigstoreClient) Set(key string, rawValue []byte, isSecret bool) erro
 	}
 
 	c.db.Data[key] = ConfigstoreDBValue{
-		Value: value,
+		Value:    value,
 		IsSecret: isSecret,
 	}
 
@@ -281,7 +279,6 @@ func (c *ConfigstoreClient) TestTemplateString(t string) (bool, error) {
 
 	return true, nil
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -363,16 +360,16 @@ func InitConfigstore(dir string, region string, role string, masterKey string, i
 	}
 
 	db := ConfigstoreDB{
-		Version:    2,
-		Region:     region,
-		DataKey:    dataKey,
+		Version:     2,
+		Region:      region,
+		DataKey:     dataKey,
 		MasterKeyId: masterKey,
-		IsInsecure: isInsecure,
-		Role:       role,
-		Data:       make(map[string]ConfigstoreDBValue),
+		IsInsecure:  isInsecure,
+		Role:        role,
+		Data:        make(map[string]ConfigstoreDBValue),
 	}
 
-	dbFile := dir+"/configstore.json"
+	dbFile := dir + "/configstore.json"
 	err := saveDB(dbFile, db)
 	if err != nil {
 		return nil, err

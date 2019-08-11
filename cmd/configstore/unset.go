@@ -2,8 +2,8 @@ package main
 
 import (
 	"errors"
-	"gopkg.in/urfave/cli.v1"
 	"github.com/motns/configstore/client"
+	"gopkg.in/urfave/cli.v1"
 )
 
 func cmdUnset(c *cli.Context) error {
