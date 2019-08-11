@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "region": "eu-west-1",
   "role": "serverRole",
   "is_insecure": true,
@@ -8,18 +8,22 @@
   "data": {
     "lastname": {
       "value": "Parker",
+      "is_binary": false,
       "is_secret": false
     },
     "password": {
       "value": "evl7D2gYxwxXRDuAIQ8jwQ7UXoRA8T7R1N+ZU4zZa/g=",
+      "is_binary": false,
       "is_secret": true
     },
     "username": {
       "value": "admin",
+      "is_binary": false,
       "is_secret": false
     },
     "email": {
       "value": "spider-man@example.com",
+      "is_binary": false,
       "is_secret": false
     }
   }

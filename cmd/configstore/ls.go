@@ -12,7 +12,7 @@ func cmdLs(c *cli.Context) error {
 		return err
 	}
 
-	valueMap, err := cc.GetAll()
+	entries, err := cc.GetAll()
 	if err != nil {
 		return err
 	}
@@ -21,7 +21,13 @@ func cmdLs(c *cli.Context) error {
 	sort.Strings(allKeys)
 
 	for _, k := range allKeys {
-		println(k + ": " + valueMap[k])
+		e := entries[k]
+
+		if e.IsBinary {
+			println(k + ": (binary)")
+		} else {
+			println(k + ": " + e.Value)
+		}
 	}
 
 	return nil

@@ -22,6 +22,7 @@ type ConfigstoreDB struct {
 
 type ConfigstoreDBValue struct {
 	Value    string `json:"value"`
+	IsBinary bool   `json:"is_binary"`
 	IsSecret bool   `json:"is_secret"`
 }
 

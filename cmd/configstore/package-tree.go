@@ -45,7 +45,7 @@ func buildTree(basedir string, configstores map[string]*client.ConfigstoreClient
 	cache := createCache()
 
 	for env, cc := range configstores {
-		data, err := cc.GetAll()
+		entries, err := cc.GetAll()
 
 		if err != nil {
 			return nil, err
@@ -61,9 +61,19 @@ func buildTree(basedir string, configstores map[string]*client.ConfigstoreClient
 			}
 
 			var val string
-			val, exists := data[k]
+			entry, exists := entries[k]
 
-			if !exists {
+			if exists {
+				if entry.IsBinary {
+					val = "(binary)"
+				} else {
+					val = entry.Value
+				}
+
+				if entry.IsSecret {
+					val = formatYellow(val)
+				}
+			} else {
 				val = formatRed("(missing)")
 			}
 
@@ -225,7 +235,7 @@ func printTree(configTree Tree, indent int, isRoot bool) {
 func printTreeNode(key string, node TreeNode, indent int, isRoot bool) {
 	out := strings.Repeat(" ", indent)
 	if !isRoot {
-		out += formatYellow("/" + key)
+		out += formatCyan("/" + key)
 	} else {
 		out += formatGreen(key)
 	}

@@ -12,7 +12,7 @@ func main() {
 	app.Usage = "Manage plain-text and encrypted credentials, using local JSON file as storage"
 	app.UsageText = "configstore [global options] command [command options]"
 	app.EnableBashCompletion = true
-	app.Version = "2.2.0"
+	app.Version = "2.3.0"
 
 	app.Commands = []cli.Command{
 		{
@@ -202,8 +202,9 @@ func main() {
 			},
 		},
 		{
-			Name:  "package",
-			Usage: "Manage a Configstore package structure containing environments and templates",
+			Name:    "package",
+			Aliases: []string{"p"},
+			Usage:   "Manage a Configstore package structure containing environments and templates",
 			Subcommands: []cli.Command{
 				{
 					Name:      "init",

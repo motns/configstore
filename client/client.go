@@ -79,18 +79,36 @@ func (c ConfigstoreClient) dbContainsEncrypted() bool {
 }
 
 func (c *ConfigstoreClient) ensureLatestVersion() error {
-	if c.db.Version == 2 {
-		return nil // Nothing to do - already latest version
-	} else {
-		err := c.initEncryption()
-		if err != nil {
+	if c.db.Version == 1 {
+		if err := c.migrateToV2(); err != nil {
 			return err
 		}
-
-		c.db.MasterKeyId = c.encryption.masterKeyId
-		c.db.Version = 2
-		return saveDB(c.dbFile, c.db)
 	}
+
+	if c.db.Version == 2 {
+		if err := c.migrateToV3(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (c *ConfigstoreClient) migrateToV2() error {
+	err := c.initEncryption()
+	if err != nil {
+		return err
+	}
+
+	c.db.MasterKeyId = c.encryption.masterKeyId
+	c.db.Version = 2
+	return saveDB(c.dbFile, c.db)
+}
+
+func (c *ConfigstoreClient) migrateToV3() error {
+	c.db.Version = 3
+	// New attributes will be filled in via zero values
+	return saveDB(c.dbFile, c.db)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -148,14 +166,14 @@ func (c *ConfigstoreClient) GetAsKMSEncrypted(key string) (string, error) {
 	return encrypted, nil
 }
 
-func (c *ConfigstoreClient) GetAll() (map[string]string, error) {
+func (c *ConfigstoreClient) GetAll() (map[string]ConfigstoreDBValue, error) {
 	if c.dbContainsEncrypted() {
 		if err := c.initEncryption(); err != nil {
 			return nil, err
 		}
 	}
 
-	entries := make(map[string]string, len(c.db.Data))
+	entries := make(map[string]ConfigstoreDBValue, len(c.db.Data))
 
 	for k, v := range c.db.Data {
 		if v.IsSecret {
@@ -164,18 +182,41 @@ func (c *ConfigstoreClient) GetAll() (map[string]string, error) {
 				return nil, err
 			}
 
-			entries[k] = decoded
+			entries[k] = ConfigstoreDBValue{
+				Value: decoded,
+				IsSecret: v.IsSecret,
+				IsBinary: v.IsBinary,
+			}
 		} else {
 			o, exists := c.overrides[k]
 			if exists {
-				entries[k] = o
+				entries[k] = ConfigstoreDBValue{
+					Value: o,
+					IsSecret: v.IsSecret,
+					IsBinary: v.IsBinary,
+				}
 			} else {
-				entries[k] = v.Value
+				entries[k] = v
 			}
 		}
 	}
 
 	return entries, nil
+}
+
+func (c *ConfigstoreClient) GetAllValues() (map[string]string, error) {
+	entries, err := c.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	valueMap := make(map[string]string, 0)
+
+	for k, v := range entries {
+		valueMap[k] = v.Value
+	}
+
+	return valueMap, nil
 }
 
 func (c *ConfigstoreClient) GetAllKeys() []string {
@@ -245,7 +286,7 @@ func (c *ConfigstoreClient) ProcessTemplateString(t string) (string, error) {
 		return "", err
 	}
 
-	templateValues, err := c.GetAll()
+	templateValues, err := c.GetAllValues()
 	if err != nil {
 		return "", err
 	}
