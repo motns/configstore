@@ -10,17 +10,16 @@ func cmdPackageEncrypt(c *cli.Context) error {
 	envStr := c.Args().Get(0)
 	ignoreRole := c.Bool("ignore-role")
 
-	env, subenvs, err := ParseEnv(envStr, basedir, true)
-
+	env, err := ParseEnv(envStr, basedir, true)
 	if err != nil {
 		return err
 	}
 
-	if len(subenvs) != 0 {
+	if env.isSubenv() {
 		return errors.New("encrypt command not supported for sub-environment")
 	}
 
-	cc, err := ConfigstoreForEnv(basedir, env, subenvs, ignoreRole)
+	cc, err := ConfigstoreForEnv(env, ignoreRole)
 	if err != nil {
 		return err
 	}

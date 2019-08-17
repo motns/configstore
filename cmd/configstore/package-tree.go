@@ -20,12 +20,21 @@ func cmdPackageTree(c *cli.Context) error {
 	ignoreRole := c.Bool("ignore-role")
 	skipDecryption := c.Bool("skip-decryption")
 
-	envs, err := ListDirs(basedir + "/env")
+	dirs, err := ListDirs(basedir + "/env")
 	if err != nil {
 		return err
 	}
 
-	configstores, err := loadAllConfigstores(basedir, envs, ignoreRole)
+	var envs = make([]Env, 0)
+	for _, d := range dirs {
+		envs = append(envs, Env{
+			basedir: basedir,
+			envName: d,
+			subenvNames: nil,
+		})
+	}
+
+	configstores, err := loadAllConfigstores(envs, ignoreRole)
 	if err != nil {
 		return err
 	}
@@ -102,17 +111,17 @@ func buildTree(basedir string, configstores map[string]*client.ConfigstoreClient
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Process Configstores
 
-func loadAllConfigstores(basedir string, envs []string, ignoreRole bool) (map[string]*client.ConfigstoreClient, error) {
+func loadAllConfigstores(envs []Env, ignoreRole bool) (map[string]*client.ConfigstoreClient, error) {
 	configstores := make(map[string]*client.ConfigstoreClient)
 
 	for _, env := range envs {
-		cc, err := ConfigstoreForEnv(basedir, env, nil, ignoreRole)
+		cc, err := ConfigstoreForEnv(env, ignoreRole)
 
 		if err != nil {
-			return nil, errors.New("failed to load Configstore \"" + env + "\": " + err.Error())
+			return nil, errors.New("failed to load Configstore \"" + env.envStr() + "\": " + err.Error())
 		}
 
-		configstores[env] = cc
+		configstores[env.envName] = cc
 	}
 
 	return configstores, nil

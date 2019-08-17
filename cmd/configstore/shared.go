@@ -6,12 +6,126 @@ import (
 	"fmt"
 	"github.com/howeyc/gopass"
 	"github.com/motns/configstore/client"
-	"github.com/olekukonko/tablewriter"
 	"io/ioutil"
 	"os"
 	"sort"
 	"strings"
 )
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Data Structure for storing the path to an environment
+
+type Env struct {
+	basedir     string
+	envName     string
+	subenvNames []string
+}
+
+func (e *Env) mainEnvPath() string {
+	return e.basedir + "/env/" + e.envName
+}
+
+func (e *Env) envPath() string {
+	var out = e.basedir + "/env/" + e.envName
+
+	for _, s := range e.subenvNames {
+		out = out + "/" + s
+	}
+
+	return out
+}
+
+func (e *Env) envStr() string {
+	var out = e.envName
+
+	for _, s := range e.subenvNames {
+		out = out + "/" + s
+	}
+
+	return out
+}
+
+func (e *Env) mainEnvExists() bool {
+	return DirExists(e.mainEnvPath())
+}
+
+func (e *Env) envExists() bool {
+	return DirExists(e.envPath())
+}
+
+func (e *Env) isSubenv() bool {
+	return len(e.subenvNames) > 0
+}
+
+func (e *Env) isMainEnv() bool {
+	return len(e.subenvNames) == 0
+}
+
+func (e *Env) dbFile() string {
+	return e.mainEnvPath() + "/configstore.json"
+}
+
+func (e *Env) overrideFile() (string, error) {
+	if !e.isSubenv() {
+		return "", errors.New("trying to get override file for top-level environment")
+	}
+
+	return e.envPath() + "/override.json", nil
+}
+
+func (e *Env) overrideFiles() []string {
+	overrideFiles := make([]string, 0)
+
+	for k := range e.subenvNames {
+		overrideFiles = append(overrideFiles, e.basedir + "/env/" + e.envName+ "/" + strings.Join(e.subenvNames[0:k+1], "/") + "/override.json")
+	}
+
+	return overrideFiles
+}
+
+func (e *Env) getSubenv(subenv string) Env {
+	return Env{
+		basedir: e.basedir,
+		envName: e.envName,
+		subenvNames: append(e.subenvNames, subenv),
+	}
+}
+
+func ParseEnv(s string, basedir string, validate bool) (Env, error) {
+	if s == "" {
+		return Env{}, errors.New("environment name cannot be empty")
+	}
+
+	var env string
+	var subenvs []string
+
+	if strings.Contains(s, "/") {
+		parts := strings.Split(s, "/")
+		env = parts[0]
+		subenvs = parts[1:]
+	} else {
+		env = s
+	}
+
+	e := Env{
+		basedir:     basedir,
+		envName:     env,
+		subenvNames: subenvs,
+	}
+
+	if validate && !e.envExists() {
+		return Env{}, errors.New("environment does not exist: " + e.envStr())
+	}
+
+	return e, nil
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Helpers
 
 func SliceContains(s []string, el string) bool {
 	for _, v := range s {
@@ -70,67 +184,6 @@ func ListFiles(basedir string) ([]string, error) {
 	return files, nil
 }
 
-func ParseEnv(s string, basedir string, validate bool) (string, []string, error) {
-	if s == "" {
-		return "", nil, errors.New("environment name cannot be empty")
-	}
-
-	var env string
-	var subenvs []string
-
-	if strings.Contains(s, "/") {
-		parts := strings.Split(s, "/")
-		env = parts[0]
-		subenvs = parts[1:]
-	} else {
-		env = s
-	}
-
-	return env, subenvs, nil
-}
-
-func SubEnvPath(basedir string, env string, subenvs []string) (string, error) {
-	if len(subenvs) == 0 {
-		return "", errors.New("subenvs cannot be empty")
-	}
-	return basedir + "/env/" + env + "/" + strings.Join(subenvs, "/"), nil
-}
-
-func EnvExists(basedir string, env string) bool {
-	return DirExists(basedir + "/env/" + env)
-}
-
-func CheckEnv(basedir string, env string) error {
-	if EnvExists(basedir, env) == false {
-		return errors.New("environment doesn't exist: " + env)
-	}
-
-	return nil
-}
-
-func SubEnvExists(basedir string, env string, subenvs []string) bool {
-	path, err := SubEnvPath(basedir, env, subenvs)
-	if err != nil {
-		return false
-	}
-	return DirExists(path)
-}
-
-func CheckSubEnvs(basedir string, env string, subenvs []string) error {
-	for k := range subenvs {
-		path, err := SubEnvPath(basedir, env, subenvs[0:k+1])
-		if err != nil {
-			return err
-		}
-
-		if DirExists(path) == false {
-			return errors.New("sub-environment doesn't exist: " + env + "/" + strings.Join(subenvs[0:k+1], "/"))
-		}
-	}
-
-	return nil
-}
-
 func LoadEnvOverride(basedir string) (map[string]string, error) {
 	var overrides = make(map[string]string)
 
@@ -156,28 +209,8 @@ func SaveEnvOverride(basedir string, override map[string]string) error {
 	return ioutil.WriteFile(basedir+"/override.json", jsonStr, 0644)
 }
 
-func ConfigstoreForEnv(basedir string, env string, subenvs []string, ignoreRole bool) (*client.ConfigstoreClient, error) {
-	dbFile := basedir + "/env/" + env + "/configstore.json"
-
-	overrideFiles := make([]string, 0)
-
-	if len(subenvs) > 0 {
-		err := CheckSubEnvs(basedir, env, subenvs)
-		if err != nil {
-			return nil, err
-		}
-
-		for k := range subenvs {
-			path, err := SubEnvPath(basedir, env, subenvs[0:k+1])
-			if err != nil {
-				return nil, err
-			}
-
-			overrideFiles = append(overrideFiles, path+"/override.json")
-		}
-	}
-
-	cc, err := client.NewConfigstoreClient(dbFile, overrideFiles, ignoreRole)
+func ConfigstoreForEnv(env Env, ignoreRole bool) (*client.ConfigstoreClient, error) {
+	cc, err := client.NewConfigstoreClient(env.dbFile(), env.overrideFiles(), ignoreRole)
 	if err != nil {
 		return nil, err
 	}
@@ -237,50 +270,35 @@ func SetCmdShared(cc *client.ConfigstoreClient, isSecret bool, isBinary bool, ke
 	return nil
 }
 
-func RenderTable(allKeys []string, allValues map[string]map[string]string, envs []string, isSubEnv bool) {
-	var headers []string
-
-	if isSubEnv {
-		headers = append([]string{"Key / SubEnv"}, envs...)
-	} else {
-		headers = append([]string{"Key / Env"}, envs...)
+func CreateSubenvShared(env Env) error {
+	if !env.mainEnvExists() {
+		return errors.New("main environment doesn't exist: " + env.envName)
 	}
 
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader(headers)
-
-	for _, k := range allKeys {
-		cols := make([]string, 0)
-		cols = append(cols, k)
-
-		firstVal := allValues[envs[0]][k]
-		hasDiff := false
-
-		for _, e := range envs {
-			v := allValues[e][k]
-			var formatted string
-
-			if firstVal != v {
-				hasDiff = true
-			}
-
-			if v == "" {
-				formatted = formatRed("(missing)")
-			} else {
-				formatted = v
-			}
-
-			cols = append(cols, formatted)
-		}
-
-		if hasDiff {
-			table.Append(formatAllYellow(cols))
-		} else {
-			table.Append(cols)
-		}
+	if env.envExists() {
+		return errors.New("sub-environment already exists: " + env.envStr())
 	}
 
-	table.Render()
+	if err := os.MkdirAll(env.envPath(), 0755); err != nil {
+		return err
+	}
+
+	filePath, err := env.overrideFile()
+
+	f, err := os.OpenFile(filePath, os.O_CREATE|os.O_RDWR, 0666)
+	if err != nil {
+		return err
+	}
+
+	if _, err := f.WriteString("{}"); err != nil {
+		return err
+	}
+
+	if err = f.Close(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func CompareKeys(cc1 *client.ConfigstoreClient, cc2 *client.ConfigstoreClient) ([]string, error) {

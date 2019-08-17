@@ -12,13 +12,12 @@ func cmdPackageProcessTemplates(c *cli.Context) error {
 	envStr := c.Args().Get(0)
 	outDir := c.Args().Get(1)
 
-	env, subenvs, err := ParseEnv(envStr, basedir, true)
-
+	env, err := ParseEnv(envStr, basedir, true)
 	if err != nil {
 		return err
 	}
 
-	cc, err := ConfigstoreForEnv(basedir, env, subenvs, ignoreRole)
+	cc, err := ConfigstoreForEnv(env, ignoreRole)
 	if err != nil {
 		return err
 	}

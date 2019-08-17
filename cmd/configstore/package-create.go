@@ -11,20 +11,19 @@ func cmdPackageCreate(c *cli.Context) error {
 	basedir := c.String("basedir")
 
 	envStr := c.Args().Get(0)
-	env, subenvs, err := ParseEnv(envStr, basedir, false)
-
+	env, err := ParseEnv(envStr, basedir, false)
 	if err != nil {
 		return err
 	}
 
 	println("Creating environment: " + envStr)
 
-	if len(subenvs) == 0 { // We're creating a main environment
-		if EnvExists(basedir, env) {
-			return errors.New("environment already exists: " + env)
+	if env.isMainEnv() { // We're creating a main environment
+		if env.envExists() {
+			return errors.New("environment already exists: " + env.envStr())
 		}
 
-		dir := basedir + "/env/" + env
+		dir := basedir + "/env/" + env.envName
 
 		if err := os.MkdirAll(dir, 0755); err != nil {
 			return err
@@ -45,35 +44,8 @@ func cmdPackageCreate(c *cli.Context) error {
 		}
 
 	} else { // We're creating a sub-environment
-		err := CheckEnv(basedir, env)
+		err := CreateSubenvShared(env)
 		if err != nil {
-			return err
-		}
-
-		if SubEnvExists(basedir, env, subenvs) {
-			return errors.New("sub-environment already exists: " + envStr)
-		}
-
-		dir, err := SubEnvPath(basedir, env, subenvs)
-		if err != nil {
-			return err
-		}
-
-		if err := os.MkdirAll(dir, 0755); err != nil {
-			return err
-		}
-
-		f, err := os.OpenFile(dir+"/override.json", os.O_CREATE|os.O_RDWR, 0666)
-
-		if err != nil {
-			return err
-		}
-
-		if _, err := f.WriteString("{}"); err != nil {
-			return err
-		}
-
-		if err = f.Close(); err != nil {
 			return err
 		}
 	}

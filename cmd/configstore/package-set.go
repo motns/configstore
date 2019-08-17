@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"github.com/motns/configstore/client"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -10,16 +9,17 @@ func cmdPackageSet(c *cli.Context) error {
 	basedir := c.String("basedir")
 
 	envStr := c.Args().Get(0)
-	env, subenvs, err := ParseEnv(envStr, basedir, true)
-
+	env, err := ParseEnv(envStr, basedir, true)
 	if err != nil {
 		return err
 	}
 
-	if len(subenvs) == 0 { // We're updating a main environment
-		dbFile := basedir + "/env/" + env + "/configstore.json"
+	if !env.envExists() {
+		return errors.New("env doesn't exist: " + env.envStr())
+	}
 
-		cc, err := client.NewConfigstoreClient(dbFile, make([]string, 0), c.Bool("ignore-role"))
+	if env.isMainEnv() { // We're updating a main environment
+		cc, err := ConfigstoreForEnv(env, c.Bool("ignore-role"))
 		if err != nil {
 			return err
 		}
@@ -32,12 +32,7 @@ func cmdPackageSet(c *cli.Context) error {
 		return SetCmdShared(cc, isSecret, isBinary, key, val)
 
 	} else { // We're updating a sub-environment
-		path, err := SubEnvPath(basedir, env, subenvs)
-		if err != nil {
-			return err
-		}
-
-		overrides, err := LoadEnvOverride(path)
+		overrides, err := LoadEnvOverride(env.envPath())
 		if err != nil {
 			return err
 		}
@@ -51,6 +46,6 @@ func cmdPackageSet(c *cli.Context) error {
 
 		overrides[key] = val
 
-		return SaveEnvOverride(path, overrides)
+		return SaveEnvOverride(env.envPath(), overrides)
 	}
 }

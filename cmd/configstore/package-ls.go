@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"gopkg.in/urfave/cli.v1"
 	"sort"
 )
@@ -10,7 +11,7 @@ func cmdPackageLs(c *cli.Context) error {
 	envStr := c.Args().Get(0)
 	ignoreRole := c.Bool("ignore-role")
 
-	// No env provided - just list top-level envs
+	// No envName provided - just list top-level envs
 	if envStr == "" {
 		dirs, err := ListDirs(basedir + "/env")
 		if err != nil {
@@ -30,14 +31,14 @@ func cmdPackageLs(c *cli.Context) error {
 		return nil
 	}
 
-	env, subenvs, err := ParseEnv(envStr, basedir, true)
+	env, err := ParseEnv(envStr, basedir, true)
 	if err != nil {
 		return err
 	}
 
-	// Top-level env provided - list Configstore keys
-	if len(subenvs) == 0 {
-		cc, err := ConfigstoreForEnv(basedir, env, subenvs, ignoreRole)
+	// Top-level envName provided - list Configstore keys
+	if env.isMainEnv() {
+		cc, err := ConfigstoreForEnv(env, ignoreRole)
 		if err != nil {
 			return err
 		}
@@ -50,7 +51,7 @@ func cmdPackageLs(c *cli.Context) error {
 		allKeys := cc.GetAllKeys()
 		sort.Strings(allKeys)
 
-		dirs, err := ListDirs(basedir + "/env/" + env)
+		dirs, err := ListDirs(env.mainEnvPath())
 		if err != nil {
 			return err
 		}
@@ -77,18 +78,17 @@ func cmdPackageLs(c *cli.Context) error {
 		return nil
 	}
 
-	// Sub-env provided - list overrride keys
-	path, err := SubEnvPath(basedir, env, subenvs)
+	// Subenv provided - list override keys
+	if !env.envExists() {
+		return errors.New("sub-environment doesn't exist: " + env.envStr())
+	}
+
+	data, err := LoadEnvOverride(env.envPath())
 	if err != nil {
 		return err
 	}
 
-	data, err := LoadEnvOverride(path)
-	if err != nil {
-		return err
-	}
-
-	dirs, err := ListDirs(path)
+	dirs, err := ListDirs(env.envPath())
 	if err != nil {
 		return err
 	}

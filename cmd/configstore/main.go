@@ -299,6 +299,10 @@ func main() {
 							Name:  "skip-decryption",
 							Usage: "Do not decrypt any secrets - these are replaced by \"(string)\"",
 						},
+						cli.BoolFlag{
+							Name:  "recursive",
+							Usage: "Copy the selected environment, and all of its sub-environments recursively",
+						},
 					},
 				},
 				{
