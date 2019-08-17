@@ -76,7 +76,7 @@ func cmdPackageCopy(c *cli.Context) error {
 			return err
 		}
 
-		srcMap, err := src.GetAll()
+		srcMap, err := src.GetAll(c.Bool("skip-decryption"))
 		if err != nil {
 			return err
 		}

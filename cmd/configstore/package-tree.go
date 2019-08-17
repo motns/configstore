@@ -18,6 +18,7 @@ type TreeNode struct {
 func cmdPackageTree(c *cli.Context) error {
 	basedir := c.String("basedir")
 	ignoreRole := c.Bool("ignore-role")
+	skipDecryption := c.Bool("skip-decryption")
 
 	envs, err := ListDirs(basedir + "/env")
 	if err != nil {
@@ -30,7 +31,7 @@ func cmdPackageTree(c *cli.Context) error {
 	}
 
 	allKeys := getAllConfigstoreKeys(configstores)
-	configTree, err := buildTree(basedir, configstores, allKeys)
+	configTree, err := buildTree(basedir, configstores, allKeys, skipDecryption)
 	if err != nil {
 		return err
 	}
@@ -40,12 +41,12 @@ func cmdPackageTree(c *cli.Context) error {
 	return nil
 }
 
-func buildTree(basedir string, configstores map[string]*client.ConfigstoreClient, allKeys []string) (Tree, error) {
+func buildTree(basedir string, configstores map[string]*client.ConfigstoreClient, allKeys []string, skipDecryption bool) (Tree, error) {
 	configTree := make(Tree)
 	cache := createCache()
 
 	for env, cc := range configstores {
-		entries, err := cc.GetAll()
+		entries, err := cc.GetAll(skipDecryption)
 
 		if err != nil {
 			return nil, err

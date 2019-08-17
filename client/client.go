@@ -166,8 +166,8 @@ func (c *ConfigstoreClient) GetAsKMSEncrypted(key string) (string, error) {
 	return encrypted, nil
 }
 
-func (c *ConfigstoreClient) GetAll() (map[string]ConfigstoreDBValue, error) {
-	if c.dbContainsEncrypted() {
+func (c *ConfigstoreClient) GetAll(skipDecryption bool) (map[string]ConfigstoreDBValue, error) {
+	if c.dbContainsEncrypted() && !skipDecryption {
 		if err := c.initEncryption(); err != nil {
 			return nil, err
 		}
@@ -177,13 +177,20 @@ func (c *ConfigstoreClient) GetAll() (map[string]ConfigstoreDBValue, error) {
 
 	for k, v := range c.db.Data {
 		if v.IsSecret {
-			decoded, err := c.encryption.decrypt(v.Value)
-			if err != nil {
-				return nil, err
+			var value string
+
+			if skipDecryption {
+				value = "(secret)"
+			} else {
+				decoded, err := c.encryption.decrypt(v.Value)
+				if err != nil {
+					return nil, err
+				}
+				value = decoded
 			}
 
 			entries[k] = ConfigstoreDBValue{
-				Value:    decoded,
+				Value:    value,
 				IsSecret: v.IsSecret,
 				IsBinary: v.IsBinary,
 			}
@@ -204,8 +211,8 @@ func (c *ConfigstoreClient) GetAll() (map[string]ConfigstoreDBValue, error) {
 	return entries, nil
 }
 
-func (c *ConfigstoreClient) GetAllValues() (map[string]string, error) {
-	entries, err := c.GetAll()
+func (c *ConfigstoreClient) GetAllValues(skipDecryption bool) (map[string]string, error) {
+	entries, err := c.GetAll(skipDecryption)
 	if err != nil {
 		return nil, err
 	}
@@ -365,7 +372,7 @@ func (c *ConfigstoreClient) ProcessTemplateString(t string) (string, error) {
 		return "", err
 	}
 
-	templateValues, err := c.GetAllValues()
+	templateValues, err := c.GetAllValues(false)
 	if err != nil {
 		return "", err
 	}

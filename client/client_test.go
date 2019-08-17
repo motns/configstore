@@ -180,7 +180,7 @@ func TestGetAll(t *testing.T) {
 		t.Errorf("failed to initialise configstore client: %s", err)
 	}
 
-	configMap, err := c.GetAllValues()
+	configMap, err := c.GetAllValues(false)
 
 	if err != nil {
 		t.Errorf("failed to load configstore values: %s", err)
@@ -214,7 +214,7 @@ func TestGetAllWithOverride(t *testing.T) {
 		t.Errorf("failed to initialise configstore client: %s", err)
 	}
 
-	configMap, err := c.GetAllValues()
+	configMap, err := c.GetAllValues(false)
 
 	if err != nil {
 		t.Errorf("failed to load configstore values: %s", err)

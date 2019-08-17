@@ -12,7 +12,7 @@ func main() {
 	app.Usage = "Manage plain-text and encrypted credentials, using local JSON file as storage"
 	app.UsageText = "configstore [global options] command [command options]"
 	app.EnableBashCompletion = true
-	app.Version = "2.3.0"
+	app.Version = "2.4.0"
 
 	app.Commands = []cli.Command{
 		{
@@ -163,6 +163,10 @@ func main() {
 					Name:  "ignore-role",
 					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 				},
+				cli.BoolFlag{
+					Name:  "skip-decryption",
+					Usage: "Do not decrypt any secrets - these are replaced by \"(string)\"",
+				},
 			},
 		},
 		{
@@ -291,6 +295,10 @@ func main() {
 							Usage: "The base directory for the configuration package structure",
 							Value: "./config",
 						},
+						cli.BoolFlag{
+							Name:  "skip-decryption",
+							Usage: "Do not decrypt any secrets - these are replaced by \"(string)\"",
+						},
 					},
 				},
 				{
@@ -401,6 +409,10 @@ func main() {
 							Name:  "ignore-role",
 							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 						},
+						cli.BoolFlag{
+							Name:  "skip-decryption",
+							Usage: "Do not decrypt any secrets - these are replaced by \"(string)\"",
+						},
 					},
 				},
 				{
@@ -416,6 +428,10 @@ func main() {
 						cli.BoolFlag{
 							Name:  "ignore-role",
 							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
+						},
+						cli.BoolFlag{
+							Name:  "skip-decryption",
+							Usage: "Do not decrypt any secrets - these are replaced by \"(string)\"",
 						},
 					},
 				},

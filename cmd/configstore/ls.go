@@ -12,7 +12,7 @@ func cmdLs(c *cli.Context) error {
 		return err
 	}
 
-	entries, err := cc.GetAll()
+	entries, err := cc.GetAll(c.Bool("skip-decryption"))
 	if err != nil {
 		return err
 	}
