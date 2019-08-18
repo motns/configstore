@@ -147,6 +147,15 @@ func (c *ConfigstoreClient) Get(key string) (string, error) {
 	}
 }
 
+func (c *ConfigstoreClient) Exists(key string) bool {
+	if key == "" {
+		return false
+	}
+
+	_, exists := c.db.Data[key]
+	return exists
+}
+
 func (c *ConfigstoreClient) GetAsKMSEncrypted(key string) (string, error) {
 	value, err := c.Get(key)
 	if err != nil {

@@ -22,7 +22,7 @@ func cmdPackageCopy(c *cli.Context) error {
 		return err
 	}
 
-	if err := cp(srcEnv, destEnv, keyPattern, c.Bool("skip-decryption"), c.Bool("recursive")); err != nil {
+	if err := cp(srcEnv, destEnv, keyPattern, c.Bool("skip-decryption"), c.Bool("recursive"), c.Bool("skip-existing")); err != nil {
 		return err
 	}
 
@@ -30,17 +30,17 @@ func cmdPackageCopy(c *cli.Context) error {
 	return nil
 }
 
-func cp(srcEnv Env, destEnv Env, keyPattern string, skipDecryption bool, recursive bool) error {
+func cp(srcEnv Env, destEnv Env, keyPattern string, skipDecryption bool, recursive bool, skipExisting bool) error {
 	if (srcEnv.isSubenv() && !destEnv.isSubenv()) || (!srcEnv.isSubenv() && destEnv.isSubenv()) {
 		return errors.New("you can only copy values between two top-level or two sub-environments")
 	}
 
 	if srcEnv.isSubenv() { // We're copying between two sub-environments
-		if err := copySubenv(srcEnv, destEnv, keyPattern); err != nil {
+		if err := copySubenv(srcEnv, destEnv, keyPattern, skipExisting); err != nil {
 			return err
 		}
 	} else { // We're copying between top-level environments
-		if err := copyEnv(srcEnv, destEnv, keyPattern, skipDecryption); err != nil {
+		if err := copyEnv(srcEnv, destEnv, keyPattern, skipDecryption, skipExisting); err != nil {
 			return err
 		}
 	}
@@ -61,7 +61,7 @@ func cp(srcEnv Env, destEnv Env, keyPattern string, skipDecryption bool, recursi
 			}
 		}
 
-		err := cp(srcSubenv, destSubenv, keyPattern, skipDecryption, recursive)
+		err := cp(srcSubenv, destSubenv, keyPattern, skipDecryption, recursive, skipExisting)
 		if err != nil {
 			return err
 		}
@@ -70,7 +70,7 @@ func cp(srcEnv Env, destEnv Env, keyPattern string, skipDecryption bool, recursi
 	return nil
 }
 
-func copyEnv(srcEnv Env, destEnv Env, keyPattern string, skipDecryption bool) error {
+func copyEnv(srcEnv Env, destEnv Env, keyPattern string, skipDecryption bool, skipExisting bool) error {
 	src, err := ConfigstoreForEnv(srcEnv, false)
 	if err != nil {
 		return err
@@ -94,9 +94,11 @@ func copyEnv(srcEnv Env, destEnv Env, keyPattern string, skipDecryption bool) er
 
 	for k, v := range srcMap {
 		if keyPattern == "" || strings.Contains(k, keyPattern) {
-			err := dest.Set(k, []byte(v.Value), v.IsSecret, v.IsBinary)
-			if err != nil {
-				return err
+			if !skipExisting || !dest.Exists(k) {
+				err := dest.Set(k, []byte(v.Value), v.IsSecret, v.IsBinary)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -104,7 +106,7 @@ func copyEnv(srcEnv Env, destEnv Env, keyPattern string, skipDecryption bool) er
 	return nil
 }
 
-func copySubenv(srcEnv Env, destEnv Env, keyPattern string) error {
+func copySubenv(srcEnv Env, destEnv Env, keyPattern string, skipExisting bool) error {
 	src, err := LoadEnvOverride(srcEnv.envPath())
 	if err != nil {
 		return err
@@ -123,7 +125,11 @@ func copySubenv(srcEnv Env, destEnv Env, keyPattern string) error {
 
 	for k, v := range src {
 		if keyPattern == "" || strings.Contains(k, keyPattern) {
-			dest[k] = v
+			_, exists := dest[k]
+
+			if !skipExisting || !exists {
+				dest[k] = v
+			}
 		}
 	}
 

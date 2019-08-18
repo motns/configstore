@@ -303,6 +303,10 @@ func main() {
 							Name:  "recursive",
 							Usage: "Copy the selected environment, and all of its sub-environments recursively",
 						},
+						cli.BoolFlag{
+							Name:  "skip-existing",
+							Usage: "Do not overwrite values for existing keys in destination DB",
+						},
 					},
 				},
 				{
