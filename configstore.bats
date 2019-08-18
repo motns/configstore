@@ -100,7 +100,7 @@
   [ "$status" -eq 1 ]
 }
 
-@test "configstore package" {
+@test "configstore package creation" {
   rm -rf test_data/package_test
   rm -rf test_data/out_test
   mkdir test_data/out_test
@@ -127,6 +127,20 @@
   [ "$status" -eq 0 ]
   [ -d "test_data/package_test/env/dev/local/foo" ]
   [ -e "test_data/package_test/env/dev/local/foo/override.json" ]
+
+  rm  -rf test_data/package_test
+  rm -rf test_data/out_test
+}
+
+@test "configstore package get, set, unset" {
+  rm -rf test_data/package_test
+  rm -rf test_data/out_test
+  mkdir test_data/out_test
+
+  run bin/darwin/amd64/configstore package init test_data/package_test
+  run bin/darwin/amd64/configstore package create_env --insecure --basedir test_data/package_test dev
+  run bin/darwin/amd64/configstore package create_env --basedir test_data/package_test dev/local
+  run bin/darwin/amd64/configstore package create_env --basedir test_data/package_test dev/local/foo
 
   run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev username root
   [ "$status" -eq 0 ]
@@ -156,11 +170,38 @@
   [ "$status" -eq 0 ]
   [ "$output" = "kevin" ]
 
-  run bin/darwin/amd64/configstore package process_templates --basedir test_data/package_test dev test_data/out_test
+  run bin/darwin/amd64/configstore package unset --basedir test_data/package_test dev/local username
   [ "$status" -eq 0 ]
 
-  run bin/darwin/amd64/configstore package process_templates --basedir test_data/package_test dev/local test_data/out_test
+  run bin/darwin/amd64/configstore package get --basedir test_data/package_test dev/local username
   [ "$status" -eq 0 ]
+  [ "$output" = "root" ]
+
+  run bin/darwin/amd64/configstore package unset --basedir test_data/package_test dev username
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore package get --basedir test_data/package_test dev username
+  [ "$status" -eq 1 ]
+  [ "$output" = "key does not exist in Configstore: username" ]
+
+  rm  -rf test_data/package_test
+  rm -rf test_data/out_test
+}
+
+@test "configstore package ls, tree, diff" {
+  rm -rf test_data/package_test
+  rm -rf test_data/out_test
+  mkdir test_data/out_test
+
+  run bin/darwin/amd64/configstore package init test_data/package_test
+  run bin/darwin/amd64/configstore package create_env --insecure --basedir test_data/package_test dev
+  run bin/darwin/amd64/configstore package create_env --basedir test_data/package_test dev/local
+  run bin/darwin/amd64/configstore package create_env --basedir test_data/package_test dev/local/foo
+
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev username root
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev password supersecret
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev/local username admin
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev/local/foo username kevin
 
   run bin/darwin/amd64/configstore package ls --basedir test_data/package_test
   [ "$status" -eq 0 ]
@@ -177,19 +218,96 @@
   run bin/darwin/amd64/configstore package diff --basedir test_data/package_test dev dev/local
   [ "$status" -eq 0 ]
 
-  run bin/darwin/amd64/configstore package unset --basedir test_data/package_test dev/local username
+  rm  -rf test_data/package_test
+  rm -rf test_data/out_test
+}
+
+@test "configstore package test, process_template" {
+  rm -rf test_data/package_test
+  rm -rf test_data/out_test
+  mkdir test_data/out_test
+
+  run bin/darwin/amd64/configstore package init test_data/package_test
+  run bin/darwin/amd64/configstore package create_env --insecure --basedir test_data/package_test dev
+  run bin/darwin/amd64/configstore package create_env --basedir test_data/package_test dev/local
+  run bin/darwin/amd64/configstore package create_env --basedir test_data/package_test dev/local/foo
+
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev username root
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev password supersecret
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev/local username admin
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev/local/foo username kevin
+
+  run bin/darwin/amd64/configstore package test --basedir test_data/package_test
   [ "$status" -eq 0 ]
 
-  run bin/darwin/amd64/configstore package get --basedir test_data/package_test dev/local username
+  run bin/darwin/amd64/configstore package process_templates --basedir test_data/package_test dev test_data/out_test
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore package process_templates --basedir test_data/package_test dev/local test_data/out_test
+  [ "$status" -eq 0 ]
+
+  rm  -rf test_data/package_test
+  rm -rf test_data/out_test
+}
+
+@test "configstore package copy" {
+  rm -rf test_data/package_test
+  rm -rf test_data/out_test
+  mkdir test_data/out_test
+
+  run bin/darwin/amd64/configstore package init test_data/package_test
+  run bin/darwin/amd64/configstore package create_env --insecure --basedir test_data/package_test dev
+  run bin/darwin/amd64/configstore package create_env --basedir test_data/package_test dev/local
+  run bin/darwin/amd64/configstore package create_env --basedir test_data/package_test dev/local/foo
+
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev username root
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev password supersecret
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev/local username admin
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev/local/foo username kevin
+
+  run bin/darwin/amd64/configstore package create_env --insecure --basedir test_data/package_test staging
+
+  run bin/darwin/amd64/configstore package copy --basedir test_data/package_test --recursive dev staging
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore package get --basedir test_data/package_test staging username
   [ "$status" -eq 0 ]
   [ "$output" = "root" ]
 
-  run bin/darwin/amd64/configstore package unset --basedir test_data/package_test dev username
+  run bin/darwin/amd64/configstore package get --basedir test_data/package_test staging password
+  [ "$status" -eq 0 ]
+  [ "$output" = "supersecret" ]
+
+  run bin/darwin/amd64/configstore package get --basedir test_data/package_test staging/local username
+  [ "$status" -eq 0 ]
+  [ "$output" = "admin" ]
+
+  run bin/darwin/amd64/configstore package get --basedir test_data/package_test staging/local/foo username
+  [ "$status" -eq 0 ]
+  [ "$output" = "kevin" ]
+
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev username dave
+
+  run bin/darwin/amd64/configstore package copy --basedir test_data/package_test dev staging
   [ "$status" -eq 0 ]
 
-  run bin/darwin/amd64/configstore package get --basedir test_data/package_test dev username
-  [ "$status" -eq 1 ]
-  [ "$output" = "key does not exist in Configstore: username" ]
+  run bin/darwin/amd64/configstore package get --basedir test_data/package_test staging username
+  [ "$status" -eq 0 ]
+  [ "$output" = "dave" ]
+
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev username john
+  run bin/darwin/amd64/configstore package set --basedir test_data/package_test dev url "https://www.example.com"
+
+  run bin/darwin/amd64/configstore package copy --basedir test_data/package_test --skip-existing dev staging
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore package get --basedir test_data/package_test staging username
+  [ "$status" -eq 0 ]
+  [ "$output" = "dave" ]
+
+  run bin/darwin/amd64/configstore package get --basedir test_data/package_test staging url
+  [ "$status" -eq 0 ]
+  [ "$output" = "https://www.example.com" ]
 
   rm  -rf test_data/package_test
   rm -rf test_data/out_test
