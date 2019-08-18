@@ -174,6 +174,9 @@
   run bin/darwin/amd64/configstore package tree --basedir test_data/package_test
   [ "$status" -eq 0 ]
 
+  run bin/darwin/amd64/configstore package diff --basedir test_data/package_test dev dev/local
+  [ "$status" -eq 0 ]
+
   run bin/darwin/amd64/configstore package unset --basedir test_data/package_test dev/local username
   [ "$status" -eq 0 ]
 

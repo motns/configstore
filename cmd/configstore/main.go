@@ -420,6 +420,27 @@ func main() {
 					},
 				},
 				{
+					Name:   "diff",
+					Usage:  "Prints out the differences between two environments",
+					ArgsUsage: "env[/subenv] env[/subenv]",
+					Action: cmdPackageDiff,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "basedir",
+							Usage: "The base directory for the configuration package structure",
+							Value: "./config",
+						},
+						cli.BoolFlag{
+							Name:  "ignore-role",
+							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
+						},
+						cli.BoolFlag{
+							Name:  "skip-decryption",
+							Usage: "Do not decrypt any secrets - these are replaced by \"(string)\"",
+						},
+					},
+				},
+				{
 					Name:   "tree",
 					Usage:  "Print out a hierarchical structure of all keys and values for environments and sub-environments",
 					Action: cmdPackageTree,
