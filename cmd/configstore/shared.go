@@ -125,64 +125,7 @@ func ParseEnv(s string, basedir string, validate bool) (Env, error) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Helpers
-
-func SliceContains(s []string, el string) bool {
-	for _, v := range s {
-		if v == el {
-			return true
-		}
-	}
-
-	return false
-}
-
-func PrintLines(ls []string) {
-	for _, s := range ls {
-		println(s)
-	}
-}
-
-func DirExists(path string) bool {
-	_, err := os.Stat(path)
-	return !os.IsNotExist(err)
-}
-
-func ListDirs(basedir string) ([]string, error) {
-	dirs := make([]string, 0)
-	entries, err := ioutil.ReadDir(basedir)
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, e := range entries {
-		if e.IsDir() {
-			dirs = append(dirs, e.Name())
-		}
-	}
-
-	return dirs, nil
-}
-
-func ListFiles(basedir string) ([]string, error) {
-	files := make([]string, 0)
-	entries, err := ioutil.ReadDir(basedir)
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, e := range entries {
-		name := e.Name()
-		e.Mode()
-		if !e.IsDir() && name[0:1] != "." {
-			files = append(files, name)
-		}
-	}
-
-	return files, nil
-}
+// Configstore Helpers
 
 func LoadEnvOverride(basedir string) (map[string]string, error) {
 	var overrides = make(map[string]string)
@@ -346,3 +289,66 @@ func CompareKeys(cc1 *client.ConfigstoreClient, cc2 *client.ConfigstoreClient) (
 		return out, errors.New("databases did not match")
 	}
 }
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Generic Helpers
+
+func SliceContains(s []string, el string) bool {
+	for _, v := range s {
+		if v == el {
+			return true
+		}
+	}
+
+	return false
+}
+
+func PrintLines(ls []string) {
+	for _, s := range ls {
+		println(s)
+	}
+}
+
+func DirExists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
+}
+
+func ListDirs(basedir string) ([]string, error) {
+	dirs := make([]string, 0)
+	entries, err := ioutil.ReadDir(basedir)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, e := range entries {
+		if e.IsDir() {
+			dirs = append(dirs, e.Name())
+		}
+	}
+
+	return dirs, nil
+}
+
+func ListFiles(basedir string) ([]string, error) {
+	files := make([]string, 0)
+	entries, err := ioutil.ReadDir(basedir)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, e := range entries {
+		name := e.Name()
+		e.Mode()
+		if !e.IsDir() && name[0:1] != "." {
+			files = append(files, name)
+		}
+	}
+
+	return files, nil
+}
+

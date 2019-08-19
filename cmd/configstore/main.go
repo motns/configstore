@@ -89,6 +89,7 @@ func main() {
 					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 				},
 			},
+			BashComplete: ConfigstoreKeysAutocomplete,
 		},
 		{
 			Name:      "encrypt",
@@ -106,6 +107,7 @@ func main() {
 					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 				},
 			},
+			BashComplete: ConfigstoreKeysAutocomplete,
 		},
 		{
 			Name:      "decrypt",
@@ -123,6 +125,7 @@ func main() {
 					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 				},
 			},
+			BashComplete: ConfigstoreKeysAutocomplete,
 		},
 		{
 			Name:      "as_kms_enc",
@@ -144,6 +147,7 @@ func main() {
 					Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 				},
 			},
+			BashComplete: ConfigstoreKeysAutocomplete,
 		},
 		{
 			Name:   "ls",
@@ -181,6 +185,7 @@ func main() {
 					Value: "./configstore.json",
 				},
 			},
+			BashComplete: ConfigstoreKeysAutocomplete,
 		},
 		{
 			Name:      "process_template",
@@ -308,6 +313,7 @@ func main() {
 							Usage: "Do not overwrite values for existing keys in destination DB",
 						},
 					},
+					BashComplete: PackageCmdAutocomplete(EnvNamesAutocomplete),
 				},
 				{
 					Name:      "set",
@@ -333,6 +339,7 @@ func main() {
 							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 						},
 					},
+					BashComplete: PackageCmdAutocomplete(nil),
 				},
 				{
 					Name:      "get",
@@ -350,6 +357,7 @@ func main() {
 							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 						},
 					},
+					BashComplete: PackageCmdAutocomplete(EnvKeysAutocomplete),
 				},
 				{
 					Name:      "unset",
@@ -367,6 +375,7 @@ func main() {
 							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 						},
 					},
+					BashComplete: PackageCmdAutocomplete(EnvKeysAutocomplete),
 				},
 				{
 					Name:      "encrypt",
@@ -384,6 +393,7 @@ func main() {
 							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 						},
 					},
+					BashComplete: PackageCmdAutocomplete(EnvKeysAutocomplete),
 				},
 				{
 					Name:      "decrypt",
@@ -401,6 +411,7 @@ func main() {
 							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 						},
 					},
+					BashComplete: PackageCmdAutocomplete(EnvKeysAutocomplete),
 				},
 				{
 					Name:      "ls",
@@ -422,6 +433,7 @@ func main() {
 							Usage: "Do not decrypt any secrets - these are replaced by \"(string)\"",
 						},
 					},
+					BashComplete: PackageCmdAutocomplete(nil),
 				},
 				{
 					Name:   "diff",
@@ -443,6 +455,7 @@ func main() {
 							Usage: "Do not decrypt any secrets - these are replaced by \"(string)\"",
 						},
 					},
+					BashComplete: PackageCmdAutocomplete(EnvNamesAutocomplete),
 				},
 				{
 					Name:   "tree",
@@ -480,6 +493,7 @@ func main() {
 							Usage: "Do not assume the IAM Role for this Configstore (if one was set) before calling the AWS API",
 						},
 					},
+					BashComplete: PackageCmdAutocomplete(nil),
 				},
 				{
 					Name:   "test",

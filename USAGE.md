@@ -196,3 +196,10 @@ security.
 
 > WARNING: This mode is NOT suitable for production use, since anyone who has access to the `configstore.json` file
 will be able to decrypt the secrets stored within it!
+
+
+### Autocomplete
+
+There's built-in support for autocomplete via BASH and Zsh. You can enable this by copying the respective autocomplete
+file (`bash_autocomplete` or `zsh_autocomplete`) bundled in the Zip file you downloaded, into your home folder,
+and sourcing it in your profile config.

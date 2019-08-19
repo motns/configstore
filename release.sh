@@ -28,9 +28,16 @@ run_cmd() {
 
 echo "Building archives for supported platforms..."
 
-run_cmd "tar -czf configstore-${version}-darwin-amd64.tar.gz -C bin/darwin/amd64 configstore"
-run_cmd "tar -czf configstore-${version}-linux-amd64.tar.gz -C bin/linux/amd64 configstore"
-run_cmd "tar -czf configstore-${version}-openbsd-amd64.tar.gz -C bin/openbsd/amd64 configstore"
+cp bash_autocomplete bin/darwin/amd64/bash_autocomplete
+cp bash_autocomplete bin/darwin/amd64/zsh_autocomplete
+cp bash_autocomplete bin/linux/amd64/bash_autocomplete
+cp bash_autocomplete bin/linux/amd64/zsh_autocomplete
+cp bash_autocomplete bin/openbsd/amd64/bash_autocomplete
+cp bash_autocomplete bin/openbsd/amd64/zsh_autocomplete
+
+run_cmd "tar -czf configstore-${version}-darwin-amd64.tar.gz -C bin/darwin/amd64 configstore bash_autocomplete zsh_autocomplete"
+run_cmd "tar -czf configstore-${version}-linux-amd64.tar.gz -C bin/linux/amd64 configstore bash_autocomplete zsh_autocomplete"
+run_cmd "tar -czf configstore-${version}-openbsd-amd64.tar.gz -C bin/openbsd/amd64 configstore bash_autocomplete zsh_autocomplete"
 run_cmd "tar -czf configstore-${version}-windows-amd64.tar.gz -C bin/windows/amd64 configstore"
 
 echo "Creating Git Tag..."
