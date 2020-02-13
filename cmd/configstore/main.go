@@ -12,7 +12,7 @@ func main() {
 	app.Usage = "Manage plain-text and encrypted credentials, using local JSON file as storage"
 	app.UsageText = "configstore [global options] command [command options]"
 	app.EnableBashCompletion = true
-	app.Version = "2.4.0"
+	app.Version = "2.5.0"
 
 	app.Commands = []cli.Command{
 		{

@@ -193,7 +193,7 @@ func (c *ConfigstoreClient) GetAll(skipDecryption bool) (map[string]ConfigstoreD
 			} else {
 				decoded, err := c.encryption.decrypt(v.Value)
 				if err != nil {
-					return nil, err
+					return nil, fmt.Errorf("%w; Failed to decrypt value for key: %s", err, k)
 				}
 				value = decoded
 			}

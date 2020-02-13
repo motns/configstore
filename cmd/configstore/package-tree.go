@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"github.com/motns/configstore/client"
 	"gopkg.in/urfave/cli.v1"
 	"sort"
@@ -58,7 +59,7 @@ func buildTree(basedir string, configstores map[string]*client.ConfigstoreClient
 		entries, err := cc.GetAll(skipDecryption)
 
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("%w; Failed to load values from env: %s", err, env)
 		}
 
 		for _, k := range allKeys {

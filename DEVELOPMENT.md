@@ -2,7 +2,7 @@
 
 ### Prerequisites
 
-First, you'll need to install Go (`>= 1.12`) - on Mac OS you can do this via Homebrew:
+First, you'll need to install Go (`>= 1.13`) - on Mac OS you can do this via Homebrew:
 ```
 brew install go --with-cc-common
 ```
