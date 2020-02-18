@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"github.com/motns/configstore/client"
 	"gopkg.in/urfave/cli.v1"
 	"os"
@@ -16,7 +17,7 @@ func cmdPackageCreate(c *cli.Context) error {
 		return err
 	}
 
-	println("Creating environment: " + envStr)
+	fmt.Println("Creating environment: " + envStr)
 
 	if env.isMainEnv() { // We're creating a main environment
 		if env.envExists() {

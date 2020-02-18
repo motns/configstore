@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"gopkg.in/urfave/cli.v1"
 	"sort"
 )
@@ -19,13 +20,13 @@ func cmdPackageLs(c *cli.Context) error {
 		}
 
 		if len(dirs) == 0 {
-			println("No environments in package")
+			fmt.Println("No environments in package")
 			return nil
 		}
 
-		println("=== Environments:")
+		fmt.Println("=== Environments:")
 		for _, dir := range dirs {
-			println(dir)
+			fmt.Println(dir)
 		}
 
 		return nil
@@ -57,21 +58,21 @@ func cmdPackageLs(c *cli.Context) error {
 		}
 
 		if len(dirs) > 0 {
-			println("=== Sub-environments:")
+			fmt.Println("=== Sub-environments:")
 			for _, d := range dirs {
-				println(d)
+				fmt.Println(d)
 			}
-			println("")
+			fmt.Println("")
 		}
 
-		println("=== Configstore Values:")
+		fmt.Println("=== Configstore Values:")
 		for _, k := range allKeys {
 			e := entries[k]
 
 			if e.IsBinary {
-				println(k + ": (binary)")
+				fmt.Println(k + ": (binary)")
 			} else {
-				println(k + ": " + e.Value)
+				fmt.Println(k + ": " + e.Value)
 			}
 		}
 
@@ -94,11 +95,11 @@ func cmdPackageLs(c *cli.Context) error {
 	}
 
 	if len(dirs) > 0 {
-		println("=== Sub-environments:")
+		fmt.Println("=== Sub-environments:")
 		for _, d := range dirs {
-			println(d)
+			fmt.Println(d)
 		}
-		println("")
+		fmt.Println("")
 	}
 
 	allKeys := make([]string, 0)
@@ -108,9 +109,9 @@ func cmdPackageLs(c *cli.Context) error {
 	}
 	sort.Strings(allKeys)
 
-	println("=== Override Values:")
+	fmt.Println("=== Override Values:")
 	for _, k := range allKeys {
-		println(k + ": " + data[k])
+		fmt.Println(k + ": " + data[k])
 	}
 
 	return nil

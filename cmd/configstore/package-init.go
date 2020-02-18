@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"gopkg.in/urfave/cli.v1"
 	"io/ioutil"
 	"os"
@@ -13,7 +14,7 @@ func cmdPackageInit(c *cli.Context) error {
 		basedir = "./config"
 	}
 
-	println("Initialising environment structure in basedir: " + basedir)
+	fmt.Println("Initialising environment structure in basedir: " + basedir)
 
 	if err := os.MkdirAll(basedir+"/env", 0755); err != nil {
 		return err

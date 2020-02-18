@@ -255,7 +255,7 @@ func printTreeNode(key string, node TreeNode, indent int, isRoot bool) {
 		out += ": " + node.value
 	}
 
-	println(out)
+	fmt.Println(out)
 
 	if len(node.children) != 0 {
 		printTree(node.children, indent+2, false)

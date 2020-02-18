@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"gopkg.in/urfave/cli.v1"
 	"io/ioutil"
 )
@@ -33,7 +34,7 @@ func cmdPackageProcessTemplates(c *cli.Context) error {
 	}
 
 	for _, f := range templateFiles {
-		println("Processing template file: " + f)
+		fmt.Println("Processing template file: " + f)
 
 		b, err := ioutil.ReadFile(basedir + "/template/" + f)
 		if err != nil {
@@ -52,6 +53,6 @@ func cmdPackageProcessTemplates(c *cli.Context) error {
 		}
 	}
 
-	println("Done!")
+	fmt.Println("Done!")
 	return nil
 }

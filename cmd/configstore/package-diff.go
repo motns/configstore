@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/motns/configstore/client"
 	"github.com/olekukonko/tablewriter"
 	"gopkg.in/urfave/cli.v1"
@@ -86,7 +87,7 @@ func renderDiffTable(header []string, allKeys []string, cc1Map map[string]client
 	if hasDiff {
 		table.Render()
 	} else {
-		println("The two DBs match")
+		fmt.Println("The two DBs match")
 	}
 }
 

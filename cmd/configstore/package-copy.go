@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"gopkg.in/urfave/cli.v1"
 	"strings"
 )
@@ -26,7 +27,7 @@ func cmdPackageCopy(c *cli.Context) error {
 		return err
 	}
 
-	println("Done")
+	fmt.Println("Done")
 	return nil
 }
 
@@ -87,9 +88,9 @@ func copyEnv(srcEnv Env, destEnv Env, keyPattern string, skipDecryption bool, sk
 	}
 
 	if keyPattern != "" {
-		println("Copying keys matching pattern \"" + keyPattern + "\" from " + srcEnv.envStr() + " to " + destEnv.envStr())
+		fmt.Println("Copying keys matching pattern \"" + keyPattern + "\" from " + srcEnv.envStr() + " to " + destEnv.envStr())
 	} else {
-		println("Copying keys from " + srcEnv.envStr() + " to " + destEnv.envStr())
+		fmt.Println("Copying keys from " + srcEnv.envStr() + " to " + destEnv.envStr())
 	}
 
 	for k, v := range srcMap {
@@ -118,9 +119,9 @@ func copySubenv(srcEnv Env, destEnv Env, keyPattern string, skipExisting bool) e
 	}
 
 	if keyPattern != "" {
-		println("Copying keys matching pattern \"" + keyPattern + "\" from " + srcEnv.envStr() + " to " + destEnv.envStr())
+		fmt.Println("Copying keys matching pattern \"" + keyPattern + "\" from " + srcEnv.envStr() + " to " + destEnv.envStr())
 	} else {
-		println("Copying keys from " + srcEnv.envStr() + " to " + destEnv.envStr())
+		fmt.Println("Copying keys from " + srcEnv.envStr() + " to " + destEnv.envStr())
 	}
 
 	for k, v := range src {

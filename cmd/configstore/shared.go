@@ -307,7 +307,7 @@ func SliceContains(s []string, el string) bool {
 
 func PrintLines(ls []string) {
 	for _, s := range ls {
-		println(s)
+		fmt.Println(s)
 	}
 }
 

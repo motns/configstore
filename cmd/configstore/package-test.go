@@ -80,7 +80,7 @@ func cmdPackageTest(c *cli.Context) error {
 	}
 
 	for _, f := range templateFiles {
-		println("Testing template file: " + f)
+		fmt.Println("Testing template file: " + f)
 
 		b, err := ioutil.ReadFile(basedir + "/template/" + f)
 		if err != nil {
@@ -95,7 +95,7 @@ func cmdPackageTest(c *cli.Context) error {
 		}
 	}
 
-	println("All tests passed!")
+	fmt.Println("All tests passed!")
 	return nil
 }
 

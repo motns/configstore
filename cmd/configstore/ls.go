@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/motns/configstore/client"
 	"gopkg.in/urfave/cli.v1"
 	"sort"
@@ -24,9 +25,9 @@ func cmdLs(c *cli.Context) error {
 		e := entries[k]
 
 		if e.IsBinary {
-			println(k + ": (binary)")
+			fmt.Println(k + ": (binary)")
 		} else {
-			println(k + ": " + e.Value)
+			fmt.Println(k + ": " + e.Value)
 		}
 	}
 
