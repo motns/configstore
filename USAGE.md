@@ -81,7 +81,11 @@ To list all keys with their respective values:
 ```bash
 configstore ls
 ```
-Like `get`, this will decrypt secret values before printing them out.
+Like `get`, this will decrypt secret values before printing them out. You can also filter the output to only show keys
+which include a certain piece of text:
+```bash
+configstore ls username
+```
 
 To remove a value:
 ```bash

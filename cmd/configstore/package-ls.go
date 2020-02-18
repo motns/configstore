@@ -10,6 +10,7 @@ import (
 func cmdPackageLs(c *cli.Context) error {
 	basedir := c.String("basedir")
 	envStr := c.Args().Get(0)
+	keyFilter := c.Args().Get(1)
 	ignoreRole := c.Bool("ignore-role")
 
 	// No envName provided - just list top-level envs
@@ -49,7 +50,7 @@ func cmdPackageLs(c *cli.Context) error {
 			return err
 		}
 
-		allKeys := cc.GetAllKeys()
+		allKeys := cc.GetAllKeys(keyFilter)
 		sort.Strings(allKeys)
 
 		dirs, err := ListDirs(env.mainEnvPath())

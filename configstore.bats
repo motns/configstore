@@ -41,6 +41,13 @@
   [ "${lines[3]}" = "username: admin" ]
 }
 
+@test "configstore ls filter" {
+  run bin/darwin/amd64/configstore ls --db test_data/example_configstore.json name
+  [ "$status" -eq 0 ]
+  [ "${lines[0]}" = "lastname: Parker" ]
+  [ "${lines[1]}" = "username: admin" ]
+}
+
 @test "configstore process_template" {
   run bin/darwin/amd64/configstore process_template --db test_data/example_configstore.json test_data/valid_template.txt
   [ "$status" -eq 0 ]
@@ -213,6 +220,9 @@
   [ "$status" -eq 0 ]
 
   run bin/darwin/amd64/configstore package tree --basedir test_data/package_test
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore package tree user --basedir test_data/package_test
   [ "$status" -eq 0 ]
 
   run bin/darwin/amd64/configstore package diff --basedir test_data/package_test dev dev/local

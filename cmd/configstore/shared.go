@@ -247,8 +247,8 @@ func CreateSubenvShared(env Env) error {
 func CompareKeys(cc1 *client.ConfigstoreClient, cc2 *client.ConfigstoreClient) ([]string, error) {
 	out := make([]string, 0)
 
-	db1Keys := cc1.GetAllKeys()
-	db2Keys := cc2.GetAllKeys()
+	db1Keys := cc1.GetAllKeys("")
+	db2Keys := cc2.GetAllKeys("")
 
 	notInDb1 := make([]string, 0)
 	notInDb2 := make([]string, 0)

@@ -58,7 +58,7 @@ func cmdPackageTest(c *cli.Context) error {
 			return err
 		}
 
-		baseKeys := cc.GetAllKeys()
+		baseKeys := cc.GetAllKeys("")
 
 		subdirs, err := ListDirs(envBasePath)
 		if err != nil {

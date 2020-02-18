@@ -152,6 +152,7 @@ func main() {
 		{
 			Name:   "ls",
 			Usage:  "List all keys and their respective values from the Configstore",
+			ArgsUsage: "[key_filter]",
 			Action: cmdLs,
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -416,7 +417,7 @@ func main() {
 				{
 					Name:      "ls",
 					Usage:     "List key/value pairs from the given environment or sub-environment, or simply return a list of environments if no argument was given",
-					ArgsUsage: "[env]",
+					ArgsUsage: "[env] [key_filter]",
 					Action:    cmdPackageLs,
 					Flags: []cli.Flag{
 						cli.StringFlag{
@@ -460,6 +461,7 @@ func main() {
 				{
 					Name:   "tree",
 					Usage:  "Print out a hierarchical structure of all keys and values for environments and sub-environments",
+					ArgsUsage: "[key_filter]",
 					Action: cmdPackageTree,
 					Flags: []cli.Flag{
 						cli.StringFlag{

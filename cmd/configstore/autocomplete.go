@@ -48,7 +48,7 @@ func EnvKeysAutocomplete(c *cli.Context, basedir string, envStr string) {
 		return // Do nothing
 	}
 
-	for _, k := range cc.GetAllKeys() {
+	for _, k := range cc.GetAllKeys("") {
 		fmt.Fprintln(c.App.Writer, k)
 	}
 }
@@ -59,7 +59,7 @@ func ConfigstoreKeysAutocomplete(c *cli.Context) {
 		return
 	}
 
-	for _, k := range cc.GetAllKeys() {
+	for _, k := range cc.GetAllKeys("") {
 		fmt.Fprintln(c.App.Writer, k)
 	}
 }

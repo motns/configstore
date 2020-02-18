@@ -40,7 +40,7 @@ func cmdPackageTree(c *cli.Context) error {
 		return err
 	}
 
-	allKeys := getAllConfigstoreKeys(configstores)
+	allKeys := getAllConfigstoreKeys(configstores, c.Args().Get(0))
 	configTree, err := buildTree(basedir, configstores, allKeys, skipDecryption)
 	if err != nil {
 		return err
@@ -128,11 +128,11 @@ func loadAllConfigstores(envs []Env, ignoreRole bool) (map[string]*client.Config
 	return configstores, nil
 }
 
-func getAllConfigstoreKeys(configstores map[string]*client.ConfigstoreClient) []string {
+func getAllConfigstoreKeys(configstores map[string]*client.ConfigstoreClient, keyFilter string) []string {
 	keySet := make(map[string]int)
 
 	for _, cc := range configstores {
-		keys := cc.GetAllKeys()
+		keys := cc.GetAllKeys(keyFilter)
 
 		for _, k := range keys {
 			keySet[k] = 1

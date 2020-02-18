@@ -18,7 +18,7 @@ func cmdLs(c *cli.Context) error {
 		return err
 	}
 
-	allKeys := cc.GetAllKeys()
+	allKeys := cc.GetAllKeys(c.Args().Get(0))
 	sort.Strings(allKeys)
 
 	for _, k := range allKeys {

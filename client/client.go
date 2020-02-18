@@ -235,11 +235,17 @@ func (c *ConfigstoreClient) GetAllValues(skipDecryption bool) (map[string]string
 	return valueMap, nil
 }
 
-func (c *ConfigstoreClient) GetAllKeys() []string {
+func (c *ConfigstoreClient) GetAllKeys(keyFilter string) []string {
 	keys := make([]string, 0)
 
 	for k := range c.db.Data {
-		keys = append(keys, k)
+		if keyFilter != "" {
+			if strings.Contains(k, keyFilter) {
+				keys = append(keys, k)
+			}
+		} else {
+			keys = append(keys, k)
+		}
 	}
 
 	return keys
@@ -402,7 +408,7 @@ func (c *ConfigstoreClient) TestTemplateString(t string) (bool, error) {
 		return false, err
 	}
 
-	keys := c.GetAllKeys()
+	keys := c.GetAllKeys("")
 	templateValues := make(map[string]string, len(keys))
 	for _, key := range keys {
 		templateValues[key] = "dummy_value" // Actual value doesn't matter
