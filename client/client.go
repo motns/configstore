@@ -133,7 +133,7 @@ func (c *ConfigstoreClient) Get(key string) (string, error) {
 
 		decrypted, err := c.encryption.decrypt(entry.Value)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("%w; Failed to decrypt value for key: %s", err, key)
 		}
 
 		return decrypted, nil
@@ -349,7 +349,7 @@ func (c *ConfigstoreClient) Decrypt(key string) error {
 
 	decrypted, err := c.encryption.decrypt(entry.Value)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w; Failed to decrypt value for key: %s", err, key)
 	}
 
 	c.db.Data[key] = ConfigstoreDBValue{
