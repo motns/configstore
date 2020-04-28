@@ -58,7 +58,7 @@ func (c *ConfigstoreClient) initEncryption() error {
 	if c.encryption == nil {
 		enc, err := createEncryption(&c.db, nil, c.ignoreRole)
 		if err != nil {
-			return err
+			return fmt.Errorf("%w; Failed to initialise encryption library", err)
 		}
 
 		c.encryption = enc

@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"io"
 )
 
@@ -25,7 +26,7 @@ type Encryption struct {
 func createEncryption(db *ConfigstoreDB, kms *KMS, ignoreRole bool) (*Encryption, error) {
 	ciphertext, err := base64.StdEncoding.DecodeString(db.DataKey)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w; Failed to load ciphertext", err)
 	}
 
 	var dataKey []byte
@@ -44,14 +45,18 @@ func createEncryption(db *ConfigstoreDB, kms *KMS, ignoreRole bool) (*Encryption
 
 			aws, err := createAWSSession(db.Region, role)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("%w; Failed to initialise AWS Session", err)
 			}
-			kms, _ = aws.createKMS()
+
+			kms, err = aws.createKMS()
+			if err != nil {
+				return nil, fmt.Errorf("%w; Failed to initialise KMS", err)
+			}
 		}
 
 		dataKey, masterKey, err = kms.decrypt(ciphertext)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("%w; Failed to decrypt Data Key", err)
 		}
 	}
 
