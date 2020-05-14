@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 )
 
@@ -59,11 +60,16 @@ func loadDB(dbFile string) (ConfigstoreDB, error) {
 
 	jsonStr, err := ioutil.ReadFile(dbFile)
 	if err != nil {
-		return ConfigstoreDB{}, err
+		return ConfigstoreDB{}, fmt.Errorf("%w; Failed to load DB file: %s", err, dbFile)
 	}
 
 	if err := json.Unmarshal(jsonStr, &db); err != nil {
-		return ConfigstoreDB{}, err
+		switch t := err.(type) {
+		case *json.SyntaxError:
+			return ConfigstoreDB{}, fmt.Errorf("%w; Failed to unmarshal json from DB file \"%s\", error at position %d (\"%s\")", err, dbFile, t.Offset, SafeSlice(string(jsonStr), int(t.Offset - 10), int(t.Offset + 10)))
+		default:
+			return ConfigstoreDB{}, fmt.Errorf("%w; Failed to unmarshal json from DB file \"%s\"", err, dbFile)
+		}
 	}
 
 	return db.validate()

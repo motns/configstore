@@ -28,7 +28,7 @@ func loadOverrides(paths []string) (map[string]string, error) {
 	for _, path := range paths {
 		m, err := loadOverride(path)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("%w; Failed to load override from file: %s", err, path)
 		}
 
 		for k, v := range m {
@@ -44,11 +44,16 @@ func loadOverride(path string) (map[string]string, error) {
 
 	jsonStr, err := ioutil.ReadFile(path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w; Failed to read override file", err)
 	}
 
 	if err := json.Unmarshal(jsonStr, &overrides); err != nil {
-		return nil, err
+		switch t := err.(type) {
+		case *json.SyntaxError:
+			return nil, fmt.Errorf("%w; Failed to unmarshal json, error at position %d (\"%s\")", err, t.Offset, SafeSlice(string(jsonStr), int(t.Offset - 10), int(t.Offset + 10)))
+		default:
+			return nil, fmt.Errorf("%w; Failed to unmarshal json", err)
+		}
 	}
 
 	return overrides, nil

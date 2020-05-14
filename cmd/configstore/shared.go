@@ -130,13 +130,19 @@ func ParseEnv(s string, basedir string, validate bool) (Env, error) {
 func LoadEnvOverride(basedir string) (map[string]string, error) {
 	var overrides = make(map[string]string)
 
-	jsonStr, err := ioutil.ReadFile(basedir + "/override.json")
+	path := basedir + "/override.json"
+	jsonStr, err := ioutil.ReadFile(path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w; Failed to load override file: %s", err, path)
 	}
 
 	if err := json.Unmarshal(jsonStr, &overrides); err != nil {
-		return nil, err
+		switch t := err.(type) {
+		case *json.SyntaxError:
+			return nil, fmt.Errorf("%w; Failed to unmarshal json for subenv \"%s\", error at position %d (\"%s\")", err, basedir, t.Offset, client.SafeSlice(string(jsonStr), int(t.Offset - 10), int(t.Offset + 10)))
+		default:
+			return nil, fmt.Errorf("%w; Failed to unmarshal json for subenv \"%s\"", err)
+		}
 	}
 
 	return overrides, nil
