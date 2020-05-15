@@ -36,11 +36,13 @@ func cmdPackageCreate(c *cli.Context) error {
 		isInsecure := c.Bool("insecure")
 
 		if !isInsecure && masterKey == "" {
+			cleanup(dir)
 			return errors.New("you have to specify --master-key if --insecure is not set")
 		}
 
 		_, err := client.InitConfigstore(dir, region, role, masterKey, isInsecure)
 		if err != nil {
+			cleanup(dir)
 			return err
 		}
 
@@ -52,4 +54,10 @@ func cmdPackageCreate(c *cli.Context) error {
 	}
 
 	return nil
+}
+
+func cleanup(dir string) {
+	if err := os.Remove(dir); err != nil {
+		fmt.Printf("WARN: Failed to clean up directory \"%s\" after initialisation error - you need to manually remove it\n", dir)
+	}
 }
