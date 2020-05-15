@@ -148,6 +148,21 @@ username
   /staging: admin
 ```
 
+You can also just show the hierarchy of environments and sub-environments by running:
+```bash
+configstore package envs
+```
+This returns an output very similar to that of `configstore package tree`:
+```bash
+/dev
+  /aws
+    /server1
+    /server2
+  /local
+/live
+/staging
+```
+
 To process templates in the context of a given environment, you can run:
 ```bash
 configstore package process_templates dev/local /path/to/output

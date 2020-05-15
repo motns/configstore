@@ -195,7 +195,7 @@
   rm -rf test_data/out_test
 }
 
-@test "configstore package ls, tree, diff" {
+@test "configstore package ls, envs, tree, diff" {
   rm -rf test_data/package_test
   rm -rf test_data/out_test
   mkdir test_data/out_test
@@ -217,6 +217,9 @@
   [ "$status" -eq 0 ]
 
   run bin/darwin/amd64/configstore package ls --basedir test_data/package_test dev/local
+  [ "$status" -eq 0 ]
+
+  run bin/darwin/amd64/configstore package envs --basedir test_data/package_test
   [ "$status" -eq 0 ]
 
   run bin/darwin/amd64/configstore package tree --basedir test_data/package_test

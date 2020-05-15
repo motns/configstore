@@ -437,6 +437,19 @@ func main() {
 					BashComplete: PackageCmdAutocomplete(nil),
 				},
 				{
+					Name:      "envs",
+					Usage:     "Print out a hierarchical structure of all environments and sub-environments",
+					Action:    cmdPackageEnvs,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "basedir",
+							Usage: "The base directory for the configuration package structure",
+							Value: "./config",
+						},
+					},
+					BashComplete: PackageCmdAutocomplete(nil),
+				},
+				{
 					Name:   "diff",
 					Usage:  "Prints out the differences between two environments",
 					ArgsUsage: "env[/subenv] env[/subenv]",
