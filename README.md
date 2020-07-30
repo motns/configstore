@@ -1,4 +1,4 @@
-# Configstore
+# Configstore [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=motns_configstore&metric=alert_status)](https://sonarcloud.io/dashboard?id=motns_configstore)
 
 A simple command line application written in Go, used to store a mixture of plain-text and encrypted values, in a plain-text
 JSON file. This JSON file is safe to commit to version control.
