@@ -167,8 +167,7 @@ func ConfigstoreForEnv(env Env, ignoreRole bool) (*client.ConfigstoreClient, err
 	return cc, nil
 }
 
-func SetCmdShared(cc *client.ConfigstoreClient, isSecret bool, isBinary bool, key string, val string) error {
-
+func ReadRawValue(isSecret bool, fallback string) ([]byte, error) {
 	// Work out whether data is being piped in from StdIn
 	var havePipe bool
 
@@ -176,7 +175,7 @@ func SetCmdShared(cc *client.ConfigstoreClient, isSecret bool, isBinary bool, ke
 	//     https://coderwall.com/p/zyxyeg/golang-having-fun-with-os-stdin-and-shell-pipes
 	ss, err := os.Stdin.Stat()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if ss.Mode()&os.ModeNamedPipe != 0 {
@@ -185,38 +184,16 @@ func SetCmdShared(cc *client.ConfigstoreClient, isSecret bool, isBinary bool, ke
 		havePipe = false
 	}
 
-	// Read raw value
-	if key == "" {
-		return errors.New("you have to specify a Key to set as the first argument")
-	}
-
-	var rawValue []byte
-
 	if havePipe {
-		rawValue, err = ioutil.ReadAll(os.Stdin)
-		if err != nil {
-			return err
-		}
-	} else {
-		if isSecret {
-			fmt.Print("Secret:")
-
-			rawValue, err = gopass.GetPasswd()
-			if err != nil {
-				return err
-			}
-
-		} else {
-			rawValue = []byte(val)
-		}
+		return ioutil.ReadAll(os.Stdin)
 	}
 
-	err = cc.Set(key, rawValue, isSecret, isBinary)
-	if err != nil {
-		return err
+	if isSecret {
+		fmt.Print("Secret:")
+		return gopass.GetPasswd()
 	}
 
-	return nil
+	return []byte(fallback), nil
 }
 
 func CreateSubenvShared(env Env) error {

@@ -16,5 +16,10 @@ func cmdSet(c *cli.Context) error {
 	isSecret := c.Bool("secret")
 	isBinary := c.Bool("binary")
 
-	return SetCmdShared(cc, isSecret, isBinary, key, val)
+	rawValue, err := ReadRawValue(isSecret, val)
+	if err != nil {
+		return err
+	}
+
+	return cc.Set(key, rawValue, isSecret, isBinary)
 }

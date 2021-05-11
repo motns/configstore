@@ -274,7 +274,7 @@ func (c *ConfigstoreClient) Set(key string, rawValue []byte, isSecret bool, isBi
 			return err
 		}
 
-		value = string(encrypted)
+		value = encrypted
 	} else {
 		value = string(rawValue)
 	}
